@@ -109,11 +109,12 @@ const CropList = () => {
                                                 Crop Input
                                             </button>
                                         </Link>
-                                        <Link to={`/crop-expense/${crop.cropId}`} style={{ flex: 1, minWidth: '45%', textDecoration: 'none' }}>
-                                            <button className="btn btn-success" style={{ width: '100%', padding: '8px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s', color: '#fff', backgroundColor: '#10b981', borderColor: '#10b981' }}>
-                                                Expenses
+                                        <Link to={`/final-crop-report/${crop.cropId}`} style={{ flex: 1, minWidth: '45%', textDecoration: 'none' }}>
+                                            <button className="btn btn-success" style={{ width: '100%', padding: '8px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s', color: '#fff' }}>
+                                                Final Report
                                             </button>
                                         </Link>
+
                                         <button className="btn btn-danger" style={{ flex: 1, minWidth: '45%', padding: '8px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s' }} onClick={() => removeCrop(crop.cropId)}>
                                             Delete
                                         </button>

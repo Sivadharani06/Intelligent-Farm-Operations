@@ -8,10 +8,10 @@ import CropEntry from './Components/FarmCropComponent/CropEntry';
 import FarmList from './Components/FarmCropComponent/FarmList';
 import CropList from './Components/FarmCropComponent/CropList';
 import FarmCropReport from './Components/FarmCropComponent/FarmCropReport';
-import AgroExpenseEntry from './Components/AgroExpenseComponent/AgroExpenseEntry';
+import FinalCropReport from './Components/FarmCropComponent/FinalCropReport';
 import CropInputView from './Components/AgroExpenseComponent/CropInputView';
-import CropExpenseView from './Components/AgroExpenseComponent/CropExpenseView';
 import AgroExpenseList from './Components/AgroExpenseComponent/AgroExpenseList';
+import AgroExpenseEntry from './Components/AgroExpenseComponent/AgroExpenseEntry';
 function App() {
   return (
     <div className="App">
@@ -26,10 +26,10 @@ function App() {
        <Route path="/crop-add" element={<CropEntry/>}/>
        <Route path="/crop-list" element={<CropList/>}/>
        <Route path="/farm-crop/:cid" element={<FarmCropReport/>}/>
+       <Route path="/final-crop-report/:cid" element={<FinalCropReport/>}/>
        <Route path="/crop-input/:cid" element={<CropInputView/>}/>
-       <Route path="/crop-expense/:cid" element={<CropExpenseView/>}/>
-       <Route path="/expense-add" element={<AgroExpenseEntry/>}/>
        <Route path="/expense-list" element={<AgroExpenseList/>}/>
+       <Route path="/expense-add" element={<AgroExpenseEntry/>}/>
        </Routes>
        
       </BrowserRouter>

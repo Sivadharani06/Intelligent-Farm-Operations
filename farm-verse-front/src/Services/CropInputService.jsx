@@ -3,6 +3,7 @@ import axios from 'axios';
 const CROP_INPUT_URL = "http://localhost:9696/farmverse/crop-input";
 const CROP_EXPENSE_URL = "http://localhost:9696/farmverse/crop-exp";
 
+
 export const addCropInput = (cropInput) => {
     return axios.post(CROP_INPUT_URL, cropInput, {
         withCredentials: true,

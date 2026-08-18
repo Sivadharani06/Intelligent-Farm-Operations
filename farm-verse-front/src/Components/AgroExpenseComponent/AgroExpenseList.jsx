@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllAgroExpenses, deleteAgroExpenseById } from "../../Services/AgroExpenseService";
+import { getAllAgroExpenses, deleteAgroExpenseById } from '../../Services/AgroExpenseService';
 import '../../DisplayView.css';
 
 const AgroExpenseList = () => {
     const [expenses, setExpenses] = useState([]);
     let navigate = useNavigate();
 
-    const setExpenseData = () => {
+    const fetchExpenses = () => {
         getAllAgroExpenses().then((response) => {
             setExpenses(response.data || []);
         }).catch(error => {
@@ -16,12 +16,12 @@ const AgroExpenseList = () => {
     }
 
     useEffect(() => {
-        setExpenseData();
+        fetchExpenses();
     }, []);
 
     const removeExpense = (id) => {
         deleteAgroExpenseById(id).then(res => {
-            let remainExpenses = expenses.filter((expense) => (expense.expenseId !== id));
+            let remainExpenses = expenses.filter((exp) => (exp.expenseId !== id));
             setExpenses(remainExpenses);
         }).catch(error => {
             alert("Error deleting expense: " + error);
@@ -35,7 +35,7 @@ const AgroExpenseList = () => {
     return (
         <div 
             style={{
-                backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.4)), url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=2832&q=80')`,
+                backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.4)), url('https://images.unsplash.com/photo-1605000794699-6660659dcb59?auto=format&fit=crop&w=2832&q=80')`,
                 height: '100vh',
                 overflowY: 'auto',
                 backgroundSize: 'cover',
@@ -56,14 +56,14 @@ const AgroExpenseList = () => {
             }}>
                 
                 <div className="menu-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 className="menu-title" style={{ fontSize: '2.5rem', color: '#0f172a', fontWeight: '800' }}>Agro Expenses Dashboard</h1>
-                    <p className="menu-subtitle" style={{ color: '#475569', fontSize: '1.1rem', marginTop: '10px' }}>Monitor and manage all agricultural expenses</p>
+                    <h1 className="menu-title" style={{ fontSize: '2.5rem', color: '#0f172a', fontWeight: '800' }}>Agro Expenses Base Rates</h1>
+                    <p className="menu-subtitle" style={{ color: '#475569', fontSize: '1.1rem', marginTop: '10px' }}>Manage unit costs for agricultural resources</p>
                 </div>
 
                 {expenses.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.5)', borderRadius: '16px' }}>
                         <h3 style={{ color: '#334155' }}>No expenses registered yet.</h3>
-                        <button className="btn btn-success" style={{ marginTop: '20px' }} onClick={() => navigate('/expense-add')}>Add an Expense</button>
+                        <button className="btn btn-success" style={{ marginTop: '20px' }} onClick={() => navigate('/expense-add')}>Add Expense</button>
                     </div>
                 ) : (
                     <div className="dashboard-grid">
@@ -77,17 +77,17 @@ const AgroExpenseList = () => {
                                     
                                     <div className="card-description" style={{ marginBottom: '20px', color: '#334155' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <span style={{ fontWeight: '600' }}>Unit Name</span>
+                                            <span style={{ fontWeight: '600' }}>Unit</span>
                                             <span>{expense.unitName}</span>
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <span style={{ fontWeight: '600' }}>Rate Per Unit</span>
-                                            <span style={{ fontWeight: '700', color: '#059669' }}>₹{Number(expense.ratePerUnit).toFixed(2)}</span>
+                                            <span style={{ fontWeight: '600' }}>Rate per Unit</span>
+                                            <span style={{ fontWeight: '700', color: '#059669' }}>${expense.ratePerUnit?.toFixed(2)}</span>
                                         </div>
                                     </div>
                                     
-                                    <div className="card-actions" style={{ marginTop: 'auto', display: 'flex', gap: '10px' }}>
-                                        <button className="btn btn-danger" style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s' }} onClick={() => removeExpense(expense.expenseId)}>
+                                    <div className="card-actions" style={{ marginTop: 'auto', display: 'flex', gap: '8px' }}>
+                                        <button className="btn btn-danger" style={{ flex: 1, padding: '8px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s' }} onClick={() => removeExpense(expense.expenseId)}>
                                             Delete
                                         </button>
                                     </div>
@@ -98,11 +98,15 @@ const AgroExpenseList = () => {
                 )}
 
                 <div className="dashboard-footer" style={{ marginTop: '40px', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '30px' }}>
-                    <button className="btn btn-secondary" onClick={returnBack} style={{ padding: '12px 30px', fontSize: '1.1rem', borderRadius: '12px', fontWeight: '600', background: '#64748b', border: 'none', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                    <button className="btn btn-secondary" onClick={returnBack} style={{ padding: '12px 30px', fontSize: '1.1rem', borderRadius: '12px', fontWeight: '600', background: '#64748b', border: 'none', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginRight: '10px' }}>
                         ← Back to Dashboard
                     </button>
+                    {expenses.length > 0 && (
+                        <button className="btn btn-success" onClick={() => navigate('/expense-add')} style={{ padding: '12px 30px', fontSize: '1.1rem', borderRadius: '12px', fontWeight: '600', border: 'none', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                            Add New Expense
+                        </button>
+                    )}
                 </div>
-                
             </div>
         </div>
     );

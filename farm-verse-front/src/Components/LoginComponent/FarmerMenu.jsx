@@ -81,19 +81,19 @@ const FarmerMenu = () => {
             </div>
           </div>
 
-          {/* Expenses Card */}
+          {/* Agro Expenses Card */}
           <div className="dashboard-card" style={{background: 'rgba(255,255,255,0.9)'}}>
             <div className="card-image-wrapper">
               <img 
-                src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80" 
-                alt="Accounting Finance" 
+                src="https://images.unsplash.com/photo-1605000794699-6660659dcb59?auto=format&fit=crop&w=600&q=80" 
+                alt="Agricultural Business" 
                 className="card-image"
               />
             </div>
             <div className="card-content">
               <h3 className="card-title">Agro Expenses</h3>
               <p className="card-description">
-                Monitor and manage all agricultural financial operations, track resource costs, and control spending.
+                Manage base rates and unit costs for agricultural resources.
               </p>
               <div className="card-actions">
                 <button className="btn btn-success" onClick={() => navigate('/expense-add')}>Add Expense</button>
@@ -101,6 +101,7 @@ const FarmerMenu = () => {
               </div>
             </div>
           </div>
+
         </div>
 
         <div className="dashboard-footer">
