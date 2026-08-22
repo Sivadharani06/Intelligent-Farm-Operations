@@ -6,6 +6,7 @@ import { addCropInput } from '../../Services/CropInputService';
 const CropInputView = () => {
     let navigate = useNavigate();
     let param = useParams();
+    const [showSuccess, setShowSuccess] = useState(false);
     const [cropInput, setCropInput] = useState({
         cropId: "",
         cropName: "",
@@ -40,8 +41,10 @@ const CropInputView = () => {
 
     const handleSave = () => {
         addCropInput(cropInput).then(response => {
-            alert("Crop Inputs saved successfully!");
-            navigate('/crop-list');
+            setShowSuccess(true);
+            setTimeout(() => {
+                navigate('/crop-list');
+            }, 1500);
         }).catch(error => {
             console.error("Error saving crop input data", error);
         });
@@ -136,6 +139,22 @@ const CropInputView = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {showSuccess && (
+                    <div style={{
+                        background: '#dcfce7',
+                        color: '#166534',
+                        padding: '12px 20px',
+                        borderRadius: '8px',
+                        marginTop: '20px',
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        border: '1px solid #bbf7d0',
+                        boxShadow: '0 2px 10px rgba(22, 163, 74, 0.1)'
+                    }}>
+                        ✓ Crop Inputs saved successfully!
+                    </div>
+                )}
 
                 <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
                     <button 

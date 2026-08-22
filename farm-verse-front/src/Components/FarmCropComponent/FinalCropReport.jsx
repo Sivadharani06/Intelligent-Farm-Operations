@@ -159,10 +159,10 @@ const FinalCropReport = () => {
               textAlign: 'center'
             }}>
               <span style={{ color: '#065f46', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                🌾 Actual Yield Achieved
+                💰 Total Expense / Acre
               </span>
               <div style={{ color: '#047857', fontSize: '1.8rem', fontWeight: '800', margin: '4px 0' }}>
-                {report.yield} <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#065f46' }}>Tons/Acre</span>
+                ₹{report.cropArea > 0 ? Math.round(report.total / report.cropArea).toLocaleString('en-IN') : 0} <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#065f46' }}>/ Acre</span>
               </div>
             </div>
 

@@ -85,8 +85,8 @@ const FarmerMenu = () => {
           <div className="dashboard-card" style={{background: 'rgba(255,255,255,0.9)'}}>
             <div className="card-image-wrapper">
               <img 
-                src="https://images.unsplash.com/photo-1605000794699-6660659dcb59?auto=format&fit=crop&w=600&q=80" 
-                alt="Agricultural Business" 
+                src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" 
+                alt="Agricultural Business and Farm Expenses" 
                 className="card-image"
               />
             </div>
