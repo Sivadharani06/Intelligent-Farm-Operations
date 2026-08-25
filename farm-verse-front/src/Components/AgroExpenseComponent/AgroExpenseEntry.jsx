@@ -119,7 +119,7 @@ const AgroExpenseEntry = () => {
                             />
                         </div>
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Rate Per Unit ($)</label>
+                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Rate Per Unit (₹)</label>
                             <input
                                 type="number"
                                 step="0.01"

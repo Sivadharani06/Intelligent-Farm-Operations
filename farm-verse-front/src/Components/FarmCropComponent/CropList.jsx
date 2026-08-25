@@ -32,6 +32,14 @@ const CropList = () => {
         navigate('/farmer-menu');
     }
 
+    const formatMonthYear = (dateStr) => {
+        if (!dateStr) return dateStr;
+        const [year, month] = dateStr.split('-');
+        if (!year || !month) return dateStr;
+        const date = new Date(year, month - 1);
+        return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    };
+
     return (
         <div 
             style={{
@@ -86,11 +94,11 @@ const CropList = () => {
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                             <span style={{ fontWeight: '600' }}>Sown Date</span>
-                                            <span>{crop.sownMonthYear}</span>
+                                            <span>{formatMonthYear(crop.sownMonthYear)}</span>
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                             <span style={{ fontWeight: '600' }}>Harvest Date</span>
-                                            <span>{crop.harvestMonthYear}</span>
+                                            <span>{formatMonthYear(crop.harvestMonthYear)}</span>
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                             <span style={{ fontWeight: '600', color: '#0f172a' }}>Yield</span>

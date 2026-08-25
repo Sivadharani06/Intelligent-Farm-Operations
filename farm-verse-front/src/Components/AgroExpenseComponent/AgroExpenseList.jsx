@@ -82,7 +82,7 @@ const AgroExpenseList = () => {
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                             <span style={{ fontWeight: '600' }}>Rate per Unit</span>
-                                            <span style={{ fontWeight: '700', color: '#059669' }}>${expense.ratePerUnit?.toFixed(2)}</span>
+                                            <span style={{ fontWeight: '700', color: '#059669' }}>₹{expense.ratePerUnit?.toFixed(2)}</span>
                                         </div>
                                     </div>
                                     
