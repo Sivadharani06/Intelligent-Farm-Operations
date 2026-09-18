@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useParams,} from 'react-router-dom';
 import {getExpectedYield} from  "../../Services/AIService";
+import {getFarmCropById} from "../../Services/CropService";
 import '../../DisplayView.css';
 
 const FarmCropReport=()=>{
@@ -20,9 +21,19 @@ const FarmCropReport=()=>{
     });
 
     const setFarmCropData=()=>{
-        getExpectedYield(param.cid).then(response=>{
-          setFarmCrop(response.data);
-      });
+        getFarmCropById(param.cid).then(res => {
+            if (res.data && res.data.yield && res.data.yield > 0) {
+                setFarmCrop(res.data);
+            } else {
+                getExpectedYield(param.cid).then(response=>{
+                    setFarmCrop(response.data);
+                }).catch(err => {
+                    alert("Error in getExpectedYield: " + err);
+                });
+            }
+        }).catch(err => {
+            alert("Error in getFarmCropById: " + err);
+        });
       }
      
       useEffect(() => {

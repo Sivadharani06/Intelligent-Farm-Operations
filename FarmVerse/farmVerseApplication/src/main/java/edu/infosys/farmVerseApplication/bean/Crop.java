@@ -14,6 +14,7 @@ public class Crop {
 	private String sownMonthYear;
 	private String harvestMonthYear;
 	private Double yield;
+	private String comments;
 	public Crop() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -22,7 +23,7 @@ public class Crop {
 	
 
 	public Crop(String cropId, Long farmId, String username, String cropName, Double cropArea, String sownMonthYear,
-			String harvestMonthYear, Double yield) {
+			String harvestMonthYear, Double yield, String comments) {
 		super();
 		this.cropId = cropId;
 		this.farmId = farmId;
@@ -32,6 +33,7 @@ public class Crop {
 		this.sownMonthYear = sownMonthYear;
 		this.harvestMonthYear = harvestMonthYear;
 		this.yield = yield;
+		this.comments = comments;
 	}
 
 
@@ -104,7 +106,13 @@ public class Crop {
 		this.username = username;
 	}
 
-	
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
 	
 	
 }

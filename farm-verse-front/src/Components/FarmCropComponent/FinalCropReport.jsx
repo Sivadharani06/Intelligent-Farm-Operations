@@ -107,62 +107,77 @@ const FinalCropReport = () => {
 
             <h4 style={{ marginTop: '25px', marginBottom: '15px', color: '#334155', borderBottom: '2px solid #e2e8f0', paddingBottom: '5px' }}>Expense Breakdown</h4>
             
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '15px', fontSize: '0.9rem' }}>
               <thead>
-                <tr style={{ background: '#f1f5f9', color: '#475569', textAlign: 'left' }}>
-                  <th style={{ padding: '8px', borderBottom: '1px solid #cbd5e1' }}>Item</th>
-                  <th style={{ padding: '8px', borderBottom: '1px solid #cbd5e1' }}>Quantity</th>
-                  <th style={{ padding: '8px', borderBottom: '1px solid #cbd5e1', textAlign: 'right' }}>Cost (₹)</th>
+                <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#1e293b', textAlign: 'left' }}>
+                  <th style={{ padding: '10px 5px', fontWeight: '700' }}>Item</th>
+                  <th style={{ padding: '10px 5px', fontWeight: '700' }}>Quantity</th>
+                  <th style={{ padding: '10px 5px', fontWeight: '700', textAlign: 'right' }}>Cost (₹)</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>💧 Water</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{report.water} Gal</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', fontWeight: '500' }}>{report.waterExp}</td>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '10px 5px', color: '#475569' }}>💧 Water</td>
+                  <td style={{ padding: '10px 5px', color: '#64748b' }}>{report.water} Gal</td>
+                  <td style={{ padding: '10px 5px', color: '#334155', textAlign: 'right', fontWeight: '600' }}>{report.waterExp}</td>
                 </tr>
-                <tr>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>🌱 Fertilizer</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{report.fertilizer} Kg</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', fontWeight: '500' }}>{report.fertilizerExp}</td>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '10px 5px', color: '#475569' }}>🌱 Fertilizer</td>
+                  <td style={{ padding: '10px 5px', color: '#64748b' }}>{report.fertilizer} Kg</td>
+                  <td style={{ padding: '10px 5px', color: '#334155', textAlign: 'right', fontWeight: '600' }}>{report.fertilizerExp}</td>
                 </tr>
-                <tr>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>🧪 Pesticides</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{report.pesticides} L</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', fontWeight: '500' }}>{report.pesticidesExp}</td>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '10px 5px', color: '#475569' }}>🧪 Pesticides</td>
+                  <td style={{ padding: '10px 5px', color: '#64748b' }}>{report.pesticides} L</td>
+                  <td style={{ padding: '10px 5px', color: '#334155', textAlign: 'right', fontWeight: '600' }}>{report.pesticidesExp}</td>
                 </tr>
-                <tr>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>🚜 Tractor Hours</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{report.tractorHour} Hrs</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', fontWeight: '500' }}>{report.tractorExp}</td>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '10px 5px', color: '#475569' }}>🚜 Tractor Hours</td>
+                  <td style={{ padding: '10px 5px', color: '#64748b' }}>{report.tractorHour} Hrs</td>
+                  <td style={{ padding: '10px 5px', color: '#334155', textAlign: 'right', fontWeight: '600' }}>{report.tractorExp}</td>
                 </tr>
-                <tr>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>🛠️ Agro Tools</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0' }}>{report.agroTools} Unit</td>
-                  <td style={{ padding: '8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right', fontWeight: '500' }}>{report.agroToolsExp}</td>
+                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                  <td style={{ padding: '10px 5px', color: '#475569' }}>🛠️ Agro Tools</td>
+                  <td style={{ padding: '10px 5px', color: '#64748b' }}>{report.agroTools} Unit</td>
+                  <td style={{ padding: '10px 5px', color: '#334155', textAlign: 'right', fontWeight: '600' }}>{report.agroToolsExp}</td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan="2" style={{ padding: '12px 8px', fontWeight: '700', fontSize: '1.1rem', color: '#0f172a' }}>TOTAL EXPENSE</td>
-                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '800', fontSize: '1.2rem', color: '#b91c1c' }}>₹ {report.total}</td>
-                </tr>
-              </tfoot>
             </table>
 
-            <div style={{ 
-              background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', 
-              border: '1px solid #a7f3d0', 
-              borderRadius: '12px', 
-              padding: '16px', 
-              marginTop: '20px',
-              textAlign: 'center'
-            }}>
-              <span style={{ color: '#065f46', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                💰 Total Expense / Acre
-              </span>
-              <div style={{ color: '#047857', fontSize: '1.8rem', fontWeight: '800', margin: '4px 0' }}>
-                ₹{report.cropArea > 0 ? Math.round(report.total / report.cropArea).toLocaleString('en-IN') : 0} <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#065f46' }}>/ Acre</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 5px' }}>
+              <span style={{ fontWeight: '700', fontSize: '1.1rem', color: '#0f172a', textTransform: 'uppercase' }}>TOTAL EXPENSE/acre</span>
+              <span style={{ fontWeight: '800', fontSize: '1.2rem', color: '#b91c1c' }}>₹ {report.total}</span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '20px' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', 
+                border: '1px solid #a7f3d0', 
+                borderRadius: '12px', 
+                padding: '16px', 
+                textAlign: 'center'
+              }}>
+                <span style={{ color: '#065f46', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  💰 Expense / Acre
+                </span>
+                <div style={{ color: '#047857', fontSize: '1.5rem', fontWeight: '800', margin: '4px 0' }}>
+                  ₹{report.cropArea > 0 ? Math.round(report.total).toLocaleString('en-IN') : 0} <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#065f46' }}>/ Acre</span>
+                </div>
+              </div>
+
+              <div style={{ 
+                background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', 
+                border: '1px solid #bfdbfe', 
+                borderRadius: '12px', 
+                padding: '16px', 
+                textAlign: 'center'
+              }}>
+                <span style={{ color: '#1e3a8a', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  📈 Cost / Ton
+                </span>
+                <div style={{ color: '#1d4ed8', fontSize: '1.5rem', fontWeight: '800', margin: '4px 0' }}>
+                  ₹{report.yield > 0 ? Math.round(report.total / report.yield).toLocaleString('en-IN') : 0} <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#1e3a8a' }}>/ Ton</span>
+                </div>
               </div>
             </div>
 

@@ -25,6 +25,10 @@ const RegisterUser=()=>{
         if(farmUser.password===confirmPassword){
           registerNewUser(farmUser).then((response)=>{
            setFlag(true);
+           setErrors({});
+           }).catch(err => {
+             console.error("Registration failed:", err);
+             setErrors({ global: "Registration failed. " + (err.response?.data?.message || err.message) });
            });
      }
   };
@@ -143,6 +147,7 @@ const RegisterUser=()=>{
           
              <br/>
              <button className='btn btn-primary w-100' onClick={handleValidation}>Register</button>
+             {errors.global && <p style={{ color: "red", fontSize: "0.85rem", marginTop: "10px", textAlign: "center" }}>{errors.global}</p>}
          </form>
          <br/>
          <div>

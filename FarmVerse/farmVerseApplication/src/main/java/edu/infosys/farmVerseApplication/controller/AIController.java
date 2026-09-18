@@ -51,6 +51,7 @@ public class AIController {
 		FarmCrop farmCrop1=cService.setFarmCrop(crop);
 		 FarmCrop farmCrop2=yService.predictYield(farmCrop1);
         crop.setYield(farmCrop2.getYield());
+        crop.setComments(farmCrop2.getComments());
          cropDao.addCrop(crop);
         return farmCrop2;
     }

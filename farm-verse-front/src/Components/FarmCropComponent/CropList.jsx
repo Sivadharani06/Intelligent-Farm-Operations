@@ -9,7 +9,8 @@ const CropList = () => {
 
     const setCropData = () => {
         getCropsByUsername().then((response) => {
-            setCrops(response.data || []);
+            let sortedCrops = (response.data || []).sort((a, b) => a.cropId - b.cropId);
+            setCrops(sortedCrops);
         }).catch(error => {
             alert("Error occurred while loading data: " + error);
         });

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.infosys.farmVerseApplication.bean.Crop;
+import edu.infosys.farmVerseApplication.bean.FarmCrop;
 import edu.infosys.farmVerseApplication.dao.CropDao;
 import edu.infosys.farmVerseApplication.service.CropService;
 import edu.infosys.farmVerseApplication.service.FarmUserService;
@@ -48,6 +49,12 @@ public class CropController {
 	public Crop getCropById(@PathVariable String id) {
 		// TODO Auto-generated method stub
 		return cropDao.getCropById(id);
+	}
+	
+	@GetMapping("/farmcrop/{id}")
+	public FarmCrop getFarmCropById(@PathVariable String id) {
+		Crop crop = cropDao.getCropById(id);
+		return service.setFarmCrop(crop);
 	}
  
 	@GetMapping("/crop")

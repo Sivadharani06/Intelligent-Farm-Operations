@@ -21,6 +21,12 @@ export const getCropById = (id) => {
     });
 };
 
+export const getFarmCropById = (id) => {
+    return axios.get(`http://localhost:9696/farmverse/farmcrop/${id}`, {
+        withCredentials: true,
+    });
+};
+
 export const getCropsByUsername = () => {
     return axios.get(CROP_URL, {
         withCredentials: true,

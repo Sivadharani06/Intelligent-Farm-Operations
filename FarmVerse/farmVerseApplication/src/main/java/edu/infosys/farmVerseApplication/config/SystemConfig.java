@@ -29,6 +29,7 @@ public class SystemConfig {
 	            .requestMatchers("/farmverse/login/**").permitAll()
 	            .requestMatchers("/farmverse/logout").permitAll()
 	            .requestMatchers("/farmverse/**").permitAll()
+	            .requestMatchers("/error").permitAll()
 	            .anyRequest().authenticated()
 	      )
 	      .logout(logout -> logout
@@ -48,7 +49,7 @@ public class SystemConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3636", "http://localhost:3637", "http://localhost:3000"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

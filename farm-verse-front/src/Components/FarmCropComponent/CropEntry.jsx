@@ -16,6 +16,7 @@ const CropEntry = () => {
         sownMonthYear: "",
         harvestMonthYear: "",
         yield: 0.0,
+        comments: "",
     });
     
     const [idList, setIdList] = useState([]);
@@ -32,7 +33,13 @@ const CropEntry = () => {
 
     const setFarmIds = () => {
         getAllFarmIdsByUser().then(response => {
-            setIdList(response.data || []);
+            const fetchedIds = response.data || [];
+            setIdList(fetchedIds);
+            if (fetchedIds.length > 0) {
+                // Suggest the most recently added farmId (highest ID)
+                const recentId = Math.max(...fetchedIds);
+                setCrop(prev => ({ ...prev, farmId: String(recentId) }));
+            }
         }).catch(err => {
             console.error("Error fetching farm IDs:", err);
         });
@@ -170,7 +177,12 @@ const CropEntry = () => {
                     </div>
                     <div className="form-group text-left" style={{ marginBottom: '15px' }}>
                         <label style={{ fontWeight: '600', color: '#475569' }}>Farm ID: </label>
-                        <input placeholder="Enter Farm ID" name="farmId" className="form-control" value={crop.farmId} onChange={onChangeHandler} style={{ borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                        <select name="farmId" className="form-control" value={crop.farmId} onChange={onChangeHandler} style={{ borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>
+                            <option value="">Select a Farm ID</option>
+                            {idList.map(id => (
+                                <option key={id} value={id}>{id}</option>
+                            ))}
+                        </select>
                         {errors.farmId && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: "4px", textAlign: "left" }}>{errors.farmId}</p>}
                     </div>
                     <div className="form-group text-left" style={{ marginBottom: '15px' }}>

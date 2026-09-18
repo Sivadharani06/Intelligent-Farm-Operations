@@ -44,8 +44,8 @@ public class FarmCrop {
 			this.cropArea = crop.getCropArea();
 			this.sownMonthYear = crop.getSownMonthYear();
 			this.harvestMonthYear = crop.getHarvestMonthYear();
-			this.yield = 0.0;
-			this.comments="";
+			this.yield = crop.getYield();
+			this.comments= crop.getComments();
 		  }
 
 	  public Long getFarmId() {
