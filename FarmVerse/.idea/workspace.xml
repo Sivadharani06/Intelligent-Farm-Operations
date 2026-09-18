@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="53b8b486-f79b-4e1b-abd5-e8204ff6653c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/farmVerseApplication/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/farmVerseApplication/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/CropEntry.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/CropEntry.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/CropList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/CropList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmCropReport.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmCropReport.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmEntry.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmEntry.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/FarmCropComponent/FarmList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/FarmerMenu.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/FarmerMenu.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/RegisterUser.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/Components/LoginComponent/RegisterUser.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../farm-verse-front/src/DisplayView.css" beforeDir="false" afterPath="$PROJECT_DIR$/../farm-verse-front/src/DisplayView.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="3HOHMxqvOpbtyZPas25OoE0Noy1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "setup",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="53b8b486-f79b-4e1b-abd5-e8204ff6653c" name="Changes" comment="" />
+      <created>1785732154681</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1785732154681</updated>
+    </task>
+    <servers />
+  </component>
+</project>
