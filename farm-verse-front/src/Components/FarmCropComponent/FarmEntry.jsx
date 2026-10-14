@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { addFarm, generateFarmId } from "../../Services/FarmService";
 import '../../DisplayView.css';
 
@@ -12,12 +13,10 @@ const FarmEntry = () => {
     area: 0.0,
     soil: "",
     username: "abcd",
-
   });
 
   const [flag, setFlag] = useState(false);
   const [newId, setNewId] = useState(0);
-
 
   const setFarmId = () => {
     generateFarmId().then(response => {
@@ -29,7 +28,6 @@ const FarmEntry = () => {
     setFarmId();
     setFlag(false);
   }, []);
-
 
   const onChangeHandler = (event) => {
     event.persist();
@@ -97,75 +95,80 @@ const FarmEntry = () => {
   }
 
   return (
-    <div 
-      style={{
-        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?auto=format&fit=crop&w=2832&q=80')`,
-        height: '100vh',
-        overflowY: 'auto',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        padding: '40px 20px',
-        boxSizing: 'border-box'
-      }}
-    >
-      <div className="login-box" style={{ 
-        maxWidth: '500px', 
-        width: '100%',
-        textAlign: 'left',
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(15px)',
-        WebkitBackdropFilter: 'blur(15px)',
-        borderRadius: '24px',
-        boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
-        padding: '40px'
-      }}>
-        <h2 className="text-center" style={{ color: '#0f172a', fontWeight: '800', marginBottom: '20px' }}>Register New Farm</h2>
-        <form>
-          <div className="form-group text-left" style={{ marginBottom: '15px' }}>
-            <label style={{ fontWeight: '600', color: '#475569' }}>Farm Id: </label>
-            <input placeholder="Farm Id" name="farmId" className="form-control" value={newId} readOnly style={{ borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f1f5f9' }} />
-          </div>
-          <div className="form-group text-left" style={{ marginBottom: '15px' }}>
-            <label style={{ fontWeight: '600', color: '#475569' }}> Farm Name: </label>
-            <input placeholder="Farm Name" name="farmName" className="form-control" value={farm.farmName} onChange={onChangeHandler} style={{ borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-            {errors.farmName && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: "4px", textAlign: "left" }}>{errors.farmName}</p>}
+    <BlurAdminLayout title="REGISTER FARM" breadcrumb="Home / Farms / Register">
+      <div style={{ maxWidth: '600px', margin: '20px auto' }}>
+        <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+          <div className="menu-header" style={{ marginBottom: '28px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '1.9rem', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>Register New Farm Plot</h2>
+            <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>Enter property details and soil characteristics</p>
           </div>
 
-          <div className="form-group text-left" style={{ marginBottom: '15px' }}>
-            <label style={{ fontWeight: '600', color: '#475569' }}> Farm Area (Acres): </label>
-            <input placeholder="Farm Area" name="area" className="form-control" value={farm.area} onChange={onChangeHandler} style={{ borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-            {errors.area && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: "4px", textAlign: "left" }}>{errors.area}</p>}
-          </div>
+          <form>
+            <div className="form-group text-left" style={{ marginBottom: '18px' }}>
+              <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>FARM ID (AUTO-GENERATED):</label>
+              <input 
+                name="farmId" 
+                className="form-control" 
+                value={newId} 
+                readOnly 
+                style={{ background: '#07171e', color: '#00d2aa', fontWeight: '800', fontSize: '1.1rem', border: '1.5px solid rgba(255,255,255,0.15)' }}
+              />
+            </div>
 
-          <div className="form-group text-left" style={{ marginBottom: '25px' }}>
-            <label style={{ fontWeight: '600', color: '#475569' }}> Soil Type: </label>
-            <select name="soil" className="form-control" value={farm.soil} onChange={onChangeHandler} style={{ borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-              <option value="">Select Soil Type</option>
-              <option value="Alluvial">Alluvial</option>
-              <option value="Black">Black</option>
-              <option value="Lateriate">Lateriate</option>
-              <option value="Red">Red</option>
-            </select>
-            {errors.soil && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: "4px", textAlign: "left" }}>{errors.soil}</p>}
-          </div>
+            <div className="form-group text-left" style={{ marginBottom: '18px' }}>
+              <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>FARM NAME:</label>
+              <input 
+                placeholder="e.g. Green Valley Plot A" 
+                name="farmName" 
+                className="form-control" 
+                value={farm.farmName} 
+                onChange={onChangeHandler} 
+                style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
+              />
+              {errors.farmName && <p style={{ color: "#fb7185", fontSize: "0.85rem", marginTop: "4px", fontWeight: '700' }}>{errors.farmName}</p>}
+            </div>
 
-          <div className="form-group" style={{ display: 'flex', gap: '10px' }}>
-            <button className="btn btn-success" onClick={handleValidation} style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: 'bold' }}>Save</button>
-            <button className="btn btn-secondary" onClick={clearAll} style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: 'bold' }}>Reset</button>
-            <button className="btn btn-warning" onClick={returnBack} style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: 'bold' }}>Return</button>
-          </div>
-        </form>
-        <div style={{ marginTop: '15px', textAlign: 'center' }}>
-          {flag && <p style={{ color: "#047857", fontWeight: "700", background: '#d1fae5', padding: '10px', borderRadius: '8px', border: '1px solid #a7f3d0' }}>✅ New Farm Successfully Registered!</p>}
+            <div className="form-group text-left" style={{ marginBottom: '18px' }}>
+              <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>FARM AREA (ACRES):</label>
+              <input 
+                placeholder="e.g. 15.5" 
+                name="area" 
+                className="form-control" 
+                value={farm.area} 
+                onChange={onChangeHandler} 
+                style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
+              />
+              {errors.area && <p style={{ color: "#fb7185", fontSize: "0.85rem", marginTop: "4px", fontWeight: '700' }}>{errors.area}</p>}
+            </div>
+
+            <div className="form-group text-left" style={{ marginBottom: '24px' }}>
+              <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>SOIL CLASSIFICATION:</label>
+              <select name="soil" className="form-control" value={farm.soil} onChange={onChangeHandler} style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}>
+                <option value="">Select Soil Type</option>
+                <option value="Alluvial">Alluvial</option>
+                <option value="Black">Black</option>
+                <option value="Lateriate">Lateriate</option>
+                <option value="Red">Red</option>
+              </select>
+              {errors.soil && <p style={{ color: "#fb7185", fontSize: "0.85rem", marginTop: "4px", fontWeight: '700' }}>{errors.soil}</p>}
+            </div>
+
+            <div style={{ display: 'flex', gap: '14px', marginTop: '28px' }}>
+              <button className="btn btn-success flex-grow-1" style={{ fontWeight: '900', padding: '12px' }} onClick={handleValidation}>Save Plot</button>
+              <button className="btn btn-secondary flex-grow-1" style={{ fontWeight: '800', padding: '12px' }} onClick={clearAll}>Reset</button>
+              <button className="btn btn-secondary flex-grow-1" style={{ fontWeight: '800', padding: '12px' }} onClick={returnBack}>Back</button>
+            </div>
+          </form>
+
+          {flag && (
+            <div style={{ marginTop: '24px', textAlign: 'center', background: '#07171e', border: '2px solid #00d2aa', padding: '14px', borderRadius: '8px', color: '#00d2aa', fontWeight: '800', fontSize: '1rem' }}>
+              ✓ New Farm Successfully Registered!
+            </div>
+          )}
         </div>
       </div>
-    </div>
-
+    </BlurAdminLayout>
   );
-
 }
 
 export default FarmEntry;

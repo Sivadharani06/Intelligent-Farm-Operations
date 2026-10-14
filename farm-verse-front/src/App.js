@@ -9,6 +9,7 @@ import FarmList from './Components/FarmCropComponent/FarmList';
 import CropList from './Components/FarmCropComponent/CropList';
 import FarmCropReport from './Components/FarmCropComponent/FarmCropReport';
 import FinalCropReport from './Components/FarmCropComponent/FinalCropReport';
+import CropProfitReport from './Components/FarmCropComponent/CropProfitReport';
 import CropInputView from './Components/AgroExpenseComponent/CropInputView';
 import AgroExpenseList from './Components/AgroExpenseComponent/AgroExpenseList';
 import AgroExpenseEntry from './Components/AgroExpenseComponent/AgroExpenseEntry';
@@ -27,6 +28,7 @@ function App() {
        <Route path="/crop-list" element={<CropList/>}/>
        <Route path="/farm-crop/:cid" element={<FarmCropReport/>}/>
        <Route path="/final-crop-report/:cid" element={<FinalCropReport/>}/>
+       <Route path="/crop-profit-report/:cid" element={<CropProfitReport/>}/>
        <Route path="/crop-input/:cid" element={<CropInputView/>}/>
        <Route path="/expense-list" element={<AgroExpenseList/>}/>
        <Route path="/expense-add" element={<AgroExpenseEntry/>}/>

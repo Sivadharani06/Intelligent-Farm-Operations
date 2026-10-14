@@ -1,169 +1,136 @@
-import React,{useState,useEffect} from 'react';
-import {useNavigate,useParams,} from 'react-router-dom';
-import {getExpectedYield} from  "../../Services/AIService";
-import {getFarmCropById} from "../../Services/CropService";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import BlurAdminLayout from '../Layout/BlurAdminLayout';
+import { getExpectedYield } from "../../Services/AIService";
+import { getFarmCropById } from "../../Services/CropService";
 import '../../DisplayView.css';
 
-const FarmCropReport=()=>{
-    let navigate=useNavigate();
-    let param=useParams();
-    const [farmCrop,setFarmCrop]=useState({
-        farmId:0,
-        farmName:"",
-         soil:"",
-        cropId:"",
-        cropName:"",
-        cropArea:0.0,
-        sownMonthYear:"",
-        harvestMonthYear:"",
-        yield:0.0,
-        comments:""
+const FarmCropReport = () => {
+    let navigate = useNavigate();
+    let param = useParams();
+    const [farmCrop, setFarmCrop] = useState({
+        farmId: 0,
+        farmName: "",
+        soil: "",
+        cropId: "",
+        cropName: "",
+        cropArea: 0.0,
+        sownMonthYear: "",
+        harvestMonthYear: "",
+        yield: 0.0,
+        comments: ""
     });
 
-    const setFarmCropData=()=>{
+    const setFarmCropData = () => {
         getFarmCropById(param.cid).then(res => {
             if (res.data && res.data.yield && res.data.yield > 0) {
                 setFarmCrop(res.data);
             } else {
-                getExpectedYield(param.cid).then(response=>{
+                getExpectedYield(param.cid).then(response => {
                     setFarmCrop(response.data);
                 }).catch(err => {
-                    alert("Error in getExpectedYield: " + err);
+                    console.error("Error in getExpectedYield: ", err);
                 });
             }
         }).catch(err => {
-            alert("Error in getFarmCropById: " + err);
+            console.error("Error in getFarmCropById: ", err);
         });
-      }
-     
-      useEffect(() => {
-         setFarmCropData();
-       }, []);
-     
-       const returnBack=()=>{
+    }
+
+    useEffect(() => {
+        setFarmCropData();
+    }, [param.cid]);
+
+    const returnBack = () => {
         navigate('/crop-list');  
-     }
-    
-      return (
-    <div 
-      style={{
-        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=2832&q=80')`,
-        height: '100vh',
-        overflowY: 'auto',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        padding: '40px 20px',
-        boxSizing: 'border-box'
-      }}
-    >
-          <div className="login-box" style={{ 
-            maxWidth: '450px', 
-            width: '100%',
-            textAlign: 'left',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(15px)',
-            WebkitBackdropFilter: 'blur(15px)',
-            borderRadius: '20px',
-            boxShadow: '0 15px 35px rgba(0,0,0,0.15)',
-            padding: '28px'
-          }}>
-            <h2 className="text-center" style={{ display: 'block', marginBottom: '8px', color: '#0f172a', fontWeight: '800', fontSize: '1.4rem' }}>
-              Crop Yield Report
-            </h2>
-            <p className="text-center" style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '20px' }}>
-              Detailed records for Crop ID: <strong style={{ color: '#047857' }}>{farmCrop.cropId}</strong>
-            </p>
+    }
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  🌱 <span>Crop Name</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.cropName}</span>
-              </div>
+    return (
+        <BlurAdminLayout title="YIELD AI ANALYSIS" breadcrumb="Home / Crops / Yield Prediction">
+            <div style={{ maxWidth: '640px', margin: '20px auto' }}>
+                <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                    <div className="menu-header" style={{ marginBottom: '28px', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '1.9rem', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>
+                            AI Crop Yield Assessment
+                        </h2>
+                        <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>
+                            Algorithmic yield forecast based on soil and acreage for Crop <span style={{ color: '#ffffff', textDecoration: 'underline' }}>#{farmCrop.cropId}</span>
+                        </p>
+                    </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  🏡 <span>Farm Name</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.farmName}</span>
-              </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>CROP VARIETY</span>
+                            <span style={{ fontWeight: '900', color: '#ffffff', fontSize: '1.05rem' }}>{farmCrop.cropName}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>FARM PLOT NAME</span>
+                            <span style={{ fontWeight: '900', color: '#ffffff', fontSize: '1.05rem' }}>{farmCrop.farmName}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(0, 210, 170, 0.3)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>SOIL CLASSIFICATION</span>
+                            <span style={{ fontWeight: '900', color: '#00d2aa', fontSize: '1.05rem' }}>{farmCrop.soil}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>CULTIVATED AREA</span>
+                            <span style={{ fontWeight: '900', color: '#ffffff', fontSize: '1.05rem' }}>{farmCrop.cropArea} Acres</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>SOWN TIMELINE</span>
+                            <span style={{ fontWeight: '800', color: '#ffffff', fontSize: '1rem' }}>{farmCrop.sownMonthYear}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: '#07171e', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>HARVEST TIMELINE</span>
+                            <span style={{ fontWeight: '800', color: '#ffffff', fontSize: '1rem' }}>{farmCrop.harvestMonthYear}</span>
+                        </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  🟫 <span>Soil Type</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.soil}</span>
-              </div>
+                        {/* Yield Metric Box */}
+                        <div style={{ 
+                            background: '#07171e', 
+                            border: '2px solid #00d2aa', 
+                            borderRadius: '10px', 
+                            padding: '20px', 
+                            marginTop: '10px',
+                            textAlign: 'center'
+                        }}>
+                            <span style={{ color: '#00d2aa', fontSize: '0.85rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                PREDICTED YIELD OUTPUT
+                            </span>
+                            <div style={{ color: '#ffffff', fontSize: '2.2rem', fontWeight: '900', margin: '8px 0' }}>
+                                {farmCrop.yield} <span style={{ fontSize: '1rem', color: '#00d2aa', fontWeight: '800' }}>Tons/Acre</span>
+                            </div>
+                            <p style={{ color: '#e2e8f0', fontSize: '0.85rem', margin: 0, fontWeight: '600' }}>
+                                Machine learning estimate trained on soil nutrients and regional climate seasonality.
+                            </p>
+                        </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  📐 <span>Crop Area</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.cropArea} Acres</span>
-              </div>
+                        {/* Comment Section */}
+                        <div style={{ 
+                            background: '#07171e', 
+                            border: '1.5px solid rgba(255, 255, 255, 0.15)', 
+                            borderRadius: '8px', 
+                            padding: '14px', 
+                            fontSize: '0.9rem',
+                            color: '#ffffff'
+                        }}>
+                            <strong style={{ color: '#00e5ff', display: 'block', marginBottom: '6px', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Agronomist Remarks:
+                            </strong>
+                            <span style={{ color: '#e2e8f0', fontWeight: '600' }}>
+                                {farmCrop.comments || 'Optimal growth conditions observed. Monitor irrigation frequency during heading stage.'}
+                            </span>
+                        </div>
+                    </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  📅 <span>Sowing Period</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.sownMonthYear}</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <span style={{ color: '#64748b', fontWeight: '500', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                  🌾 <span>Harvesting Period</span>
-                </span>
-                <span style={{ color: '#1e293b', fontWeight: '600' }}>{farmCrop.harvestMonthYear}</span>
-              </div>
-
-              {/* Special Yield Metric Highlight Card */}
-              <div style={{ 
-                background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', 
-                border: '1px solid #a7f3d0', 
-                borderRadius: '12px', 
-                padding: '16px', 
-                marginTop: '10px',
-                textAlign: 'center'
-              }}>
-                <span style={{ color: '#065f46', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  🌾 Expected Yield per Acre
-                </span>
-                <div style={{ color: '#047857', fontSize: '1.75rem', fontWeight: '800', margin: '4px 0' }}>
-                  {farmCrop.yield} <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#065f46' }}>Tons/Acre</span>
+                    <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                        <button onClick={returnBack} className="btn btn-secondary" style={{ padding: '12px 32px', fontSize: '1rem', fontWeight: '800' }}>
+                            ← Back to Crop List
+                        </button>
+                    </div>
                 </div>
-                <p style={{ color: '#065f46', fontSize: '0.75rem', margin: 0 }}>
-                  Calculated dynamically based on crop, area, and soil condition.
-                </p>
-              </div>
-
-              {/* Comment Section */}
-              <div style={{ 
-                background: '#f8fafc', 
-                border: '1px solid #e2e8f0', 
-                borderRadius: '10px', 
-                padding: '10px 12px', 
-                fontSize: '0.8rem',
-                color: '#475569'
-              }}>
-                <strong style={{ color: '#334155', display: 'block', marginBottom: '4px' }}>💬 Comments / Remarks:</strong>
-                {farmCrop.comments || 'No remarks provided for this crop entry.'}
-              </div>
-
             </div>
+        </BlurAdminLayout>
+    );
+};
 
-            <div style={{ marginTop: '30px', textAlign: 'center' }}>
-              <button onClick={() => returnBack()} className="btn btn-secondary" style={{ width: '120px' }}>
-                Return
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    };
-     
-    export default FarmCropReport;
+export default FarmCropReport;

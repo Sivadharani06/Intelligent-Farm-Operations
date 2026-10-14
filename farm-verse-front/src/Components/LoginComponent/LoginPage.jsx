@@ -58,45 +58,32 @@ const LoginPage=()=>{
  }
  
     return (
-      <div 
-        className="login-container" 
-        style={{ 
-          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.3)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2832&q=80')`,
-          height: '100vh',
-          overflowY: 'auto',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          padding: '40px 20px',
-          boxSizing: 'border-box'
-        }}
-      >
-        <div className="login-card-centered">
+      <div className="login-container" style={{ background: '#07161c' }}>
+        <div className="login-card-centered" style={{ background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
           
-          <h1 className="login-app-title">Farm Verse Application Platform</h1>
+          <h1 className="login-app-title" style={{ fontSize: '1.8rem', fontWeight: '900', color: '#ffffff' }}>Farm Verse Platform</h1>
           <hr className="title-divider" />
           
           <div className="login-form-body">
-            <h2 className="login-form-title">User Login</h2>
-            <p className="login-form-subtitle">Welcome back! Please enter your credentials to manage your farm.</p>
+            <h2 className="login-form-title" style={{ fontSize: '1.4rem', fontWeight: '900', color: '#ffffff' }}>User Login</h2>
+            <p className="login-form-subtitle" style={{ color: '#00e5ff', fontWeight: '700', fontSize: '0.95rem' }}>Welcome back! Enter credentials to manage your estate.</p>
             
             <form onSubmit={handleValidation}>
-               <div className="form-group text-left">
-                  <label>User Name</label>
+               <div className="form-group text-left" style={{ marginBottom: '18px' }}>
+                  <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>User Name</label>
                   <input 
                     placeholder="Enter Username" 
                     name="username" 
                     className="form-control" 
                     value={loginData.username} 
                     onChange={onChangeHandler} 
+                    style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
                   />
-                  {errors.username && <p className="error-text">{errors.username}</p>}
+                  {errors.username && <p style={{ color: "#fb7185", fontWeight: '700', fontSize: '0.85rem', marginTop: '4px' }}>{errors.username}</p>}
                </div>
                
-               <div className="form-group text-left">
-                  <label>Password</label>
+               <div className="form-group text-left" style={{ marginBottom: '22px' }}>
+                  <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>Password</label>
                   <input 
                     type="password" 
                     placeholder="Enter Password" 
@@ -104,21 +91,22 @@ const LoginPage=()=>{
                     className="form-control" 
                     value={loginData.password} 
                     onChange={onChangeHandler}
+                    style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
                   />
-                  {errors.password && <p className="error-text">{errors.password}</p>}
+                  {errors.password && <p style={{ color: "#fb7185", fontWeight: '700', fontSize: '0.85rem', marginTop: '4px' }}>{errors.password}</p>}
                </div>
                
-               <button type="submit" className='btn btn-primary w-100 login-submit-btn' onClick={handleValidation}>Submit</button>
+               <button type="submit" className='btn btn-primary w-100 login-submit-btn' style={{ fontWeight: '900', padding: '12px' }} onClick={handleValidation}>Sign In</button>
             </form>
             
             <div className="mt-3 text-center">
-               {!flag && <p style={{ color: "red", fontWeight: "600" }}>Invalid User Id or Password</p>}
+               {!flag && <p style={{ color: "#fb7185", fontWeight: "800", background: '#07171e', padding: '10px', borderRadius: '8px', border: '1px solid #e11d48' }}>Invalid User Id or Password</p>}
             </div>
             
-            <hr />
+            <hr style={{ borderColor: 'rgba(255,255,255,0.12)' }} />
             
             <div className="text-center">
-               <button className='btn btn-info' onClick={(e) => registerNewUser(e)}>Register New User</button>
+               <button className='btn btn-secondary w-100' style={{ fontWeight: '800', padding: '12px' }} onClick={(e) => registerNewUser(e)}>Register New User</button>
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 package edu.infosys.farmVerseApplication.bean;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -14,6 +15,7 @@ public class Crop {
 	private String sownMonthYear;
 	private String harvestMonthYear;
 	private Double yield;
+	@Column(columnDefinition = "TEXT")
 	private String comments;
 	public Crop() {
 		super();

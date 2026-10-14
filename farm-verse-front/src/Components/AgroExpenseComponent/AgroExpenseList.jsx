@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { getAllAgroExpenses, deleteAgroExpenseById } from '../../Services/AgroExpenseService';
 import '../../DisplayView.css';
 
@@ -11,7 +12,7 @@ const AgroExpenseList = () => {
         getAllAgroExpenses().then((response) => {
             setExpenses(response.data || []);
         }).catch(error => {
-            alert("Error occurred while loading data: " + error);
+            console.error("Error loading agro expenses: ", error);
         });
     }
 
@@ -24,7 +25,7 @@ const AgroExpenseList = () => {
             let remainExpenses = expenses.filter((exp) => (exp.expenseId !== id));
             setExpenses(remainExpenses);
         }).catch(error => {
-            alert("Error deleting expense: " + error);
+            console.error("Error deleting expense: ", error);
         });
     }
 
@@ -33,82 +34,66 @@ const AgroExpenseList = () => {
     }
 
     return (
-        <div 
-            style={{
-                backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.4)), url('https://images.unsplash.com/photo-1605000794699-6660659dcb59?auto=format&fit=crop&w=2832&q=80')`,
-                height: '100vh',
-                overflowY: 'auto',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                padding: '40px 20px',
-                boxSizing: 'border-box'
-            }}
-        >
-            <div className="farmer-menu-container" style={{
-                background: 'rgba(255, 255, 255, 0.7)',
-                backdropFilter: 'blur(15px)',
-                WebkitBackdropFilter: 'blur(15px)',
-                borderRadius: '28px',
-                padding: '40px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                margin: '0 auto',
-                maxWidth: '1200px'
-            }}>
-                
-                <div className="menu-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 className="menu-title" style={{ fontSize: '2.5rem', color: '#0f172a', fontWeight: '800' }}>Agro Expenses Base Rates</h1>
-                    <p className="menu-subtitle" style={{ color: '#475569', fontSize: '1.1rem', marginTop: '10px' }}>Manage unit costs for agricultural resources</p>
+        <BlurAdminLayout title="AGRO EXPENSES" breadcrumb="Home / Expenses / Rate Matrix">
+            <div className="farmer-menu-container" style={{ background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                <div className="menu-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <h1 className="menu-title" style={{ fontSize: '2.1rem', fontWeight: '900', color: '#ffffff' }}>Agro Resource Expense Rates</h1>
+                    <p className="menu-subtitle" style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700' }}>Unit cost management for water, fertilizers, pesticide treatments, machinery and tools</p>
                 </div>
 
                 {expenses.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.5)', borderRadius: '16px' }}>
-                        <h3 style={{ color: '#334155' }}>No expenses registered yet.</h3>
-                        <button className="btn btn-success" style={{ marginTop: '20px' }} onClick={() => navigate('/expense-add')}>Add Expense</button>
+                    <div style={{ textAlign: 'center', padding: '50px 20px', background: '#07171e', borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.15)' }}>
+                        <h4 style={{ color: '#ffffff', fontWeight: '800' }}>No agro expenses configured yet.</h4>
+                        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '20px' }}>Define standard unit costs to calculate accurate crop input expenses.</p>
+                        <button className="btn btn-primary" onClick={() => navigate('/expense-add')}>+ Add Expense Rate</button>
                     </div>
                 ) : (
-                    <div className="dashboard-grid">
+                    <div className="blur-cards-grid">
                         {expenses.map((expense) => (
-                            <div key={expense.expenseId} className="dashboard-card" style={{ background: 'rgba(255,255,255,0.95)', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
-                                <div className="card-content" style={{ flexGrow: 1, padding: '24px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                                        <h3 className="card-title" style={{ margin: 0, fontSize: '1.5rem', color: '#10b981' }}>{expense.expenseName}</h3>
-                                        <span style={{ background: '#e2e8f0', color: '#475569', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>ID: {expense.expenseId}</span>
+                            <div key={expense.expenseId} className="blur-feature-card" style={{ background: '#07171e', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                                <div className="blur-card-icon-banner">
+                                    <div className="blur-card-icon-wrap" style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#ec4899' }}>
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
                                     </div>
-                                    
-                                    <div className="card-description" style={{ marginBottom: '20px', color: '#334155' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <span style={{ fontWeight: '600' }}>Unit</span>
-                                            <span>{expense.unitName}</span>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                            <span style={{ fontWeight: '600' }}>Rate per Unit</span>
-                                            <span style={{ fontWeight: '700', color: '#059669' }}>₹{expense.ratePerUnit?.toFixed(2)}</span>
-                                        </div>
+                                    <span className="blur-badge blur-badge-pink" style={{ padding: '4px 10px', fontSize: '0.78rem', fontWeight: '800' }}>ID: #{expense.expenseId}</span>
+                                </div>
+                                
+                                <h3 className="blur-card-title" style={{ fontSize: '1.35rem', fontWeight: '900', color: '#ffffff', margin: '8px 0' }}>{expense.expenseName}</h3>
+                                
+                                <div style={{ margin: '14px 0 20px 0', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '12px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.92rem' }}>
+                                        <span style={{ color: '#00e5ff', fontWeight: '800' }}>UNIT MEASUREMENT</span>
+                                        <span style={{ fontWeight: '800', color: '#ffffff' }}>{expense.unitName}</span>
                                     </div>
-                                    
-                                    <div className="card-actions" style={{ marginTop: 'auto', display: 'flex', gap: '8px' }}>
-                                        <button className="btn btn-danger" style={{ flex: 1, padding: '8px', borderRadius: '8px', fontWeight: '600', transition: 'all 0.3s' }} onClick={() => removeExpense(expense.expenseId)}>
-                                            Delete
-                                        </button>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '0.92rem' }}>
+                                        <span style={{ color: '#00e5ff', fontWeight: '800' }}>RATE PER UNIT</span>
+                                        <span style={{ fontWeight: '900', color: '#00d2aa', fontSize: '1.15rem' }}>₹{expense.ratePerUnit?.toFixed(2)}</span>
                                     </div>
+                                </div>
+
+                                <div className="blur-card-actions" style={{ marginTop: 'auto' }}>
+                                    <button className="btn btn-danger w-100" style={{ fontWeight: '800', padding: '10px' }} onClick={() => removeExpense(expense.expenseId)}>
+                                        Delete Rate
+                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
 
-                <div className="dashboard-footer" style={{ marginTop: '40px', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '30px' }}>
-                    <button className="btn btn-secondary" onClick={returnBack} style={{ padding: '12px 30px', fontSize: '1.1rem', borderRadius: '12px', fontWeight: '600', background: '#64748b', border: 'none', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginRight: '10px' }}>
+                <div style={{ marginTop: '36px', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '14px' }}>
+                    <button className="btn btn-secondary" style={{ padding: '12px 32px', fontSize: '1rem', fontWeight: '800' }} onClick={returnBack}>
                         ← Back to Dashboard
                     </button>
-                    {expenses.length > 0 && (
-                        <button className="btn btn-success" onClick={() => navigate('/expense-add')} style={{ padding: '12px 30px', fontSize: '1.1rem', borderRadius: '12px', fontWeight: '600', border: 'none', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                            Add New Expense
-                        </button>
-                    )}
+                    <button className="btn btn-primary" style={{ padding: '12px 32px', fontSize: '1rem', fontWeight: '900' }} onClick={() => navigate('/expense-add')}>
+                        + Add New Expense
+                    </button>
                 </div>
             </div>
-        </div>
+        </BlurAdminLayout>
     );
 }
 

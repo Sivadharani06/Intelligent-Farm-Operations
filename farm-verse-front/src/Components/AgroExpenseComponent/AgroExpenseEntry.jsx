@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import BlurAdminLayout from "../Layout/BlurAdminLayout";
 import { addAgroExpense, generateExpenseId } from "../../Services/AgroExpenseService";
+import '../../DisplayView.css';
 
 const AgroExpenseEntry = () => {
     let navigate = useNavigate();
@@ -34,7 +36,6 @@ const AgroExpenseEntry = () => {
         event.preventDefault();
         addAgroExpense(expense)
             .then(() => {
-                alert(`Agro Expense ${expense.expenseName} Added Successfully!`);
                 navigate("/expense-list");
             })
             .catch((error) => {
@@ -43,57 +44,29 @@ const AgroExpenseEntry = () => {
     };
 
     return (
-        <div 
-            style={{
-                backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1605000794699-6660659dcb59?auto=format&fit=crop&w=2832&q=80')`,
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                padding: '20px'
-            }}
-        >
-            <div 
-                className="card" 
-                style={{
-                    width: '100%', 
-                    maxWidth: '500px', 
-                    borderRadius: '24px', 
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(10px)',
-                    overflow: 'hidden'
-                }}
-            >
-                <div 
-                    className="card-header text-center" 
-                    style={{
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        color: 'white',
-                        padding: '30px 20px',
-                        borderBottom: 'none'
-                    }}
-                >
-                    <h2 style={{ margin: 0, fontWeight: '700', fontSize: '1.8rem' }}>Add Agro Expense</h2>
-                    <p style={{ margin: '10px 0 0 0', opacity: 0.9 }}>Register base rates for resources</p>
-                </div>
-                <div className="card-body" style={{ padding: '40px 30px' }}>
+        <BlurAdminLayout title="ADD AGRO EXPENSE" breadcrumb="Home / Expenses / Add Expense">
+            <div style={{ maxWidth: '600px', margin: '20px auto' }}>
+                <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                    <div className="menu-header" style={{ marginBottom: '28px', textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '1.9rem', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>Add Expense Rate</h2>
+                        <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>Register base rates for fertilizers, water, machine hours and chemicals</p>
+                    </div>
+
                     <form onSubmit={handleFormSubmit}>
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Expense ID</label>
+                            <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>EXPENSE ID (AUTO-GENERATED):</label>
                             <input
                                 type="text"
                                 className="form-control"
                                 name="expenseId"
                                 value={expense.expenseId}
                                 readOnly
-                                style={{ backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px' }}
+                                style={{ background: '#07171e', color: '#00d2aa', fontWeight: '800', fontSize: '1.1rem', border: '1.5px solid rgba(255,255,255,0.15)' }}
                             />
                         </div>
+
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Expense Name (e.g. fertilizer, waterGallon)</label>
+                            <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>EXPENSE NAME (E.G. FERTILIZER, WATERGALLON, TRACTORHOUR):</label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -101,12 +74,13 @@ const AgroExpenseEntry = () => {
                                 value={expense.expenseName}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter expense name"
-                                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px' }}
+                                placeholder="Enter expense identifier"
+                                style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
                             />
                         </div>
+
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Unit Name (e.g. Kg, Gallon, Hour)</label>
+                            <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>UNIT NAME (E.G. KG, GALLON, HOUR):</label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -114,12 +88,13 @@ const AgroExpenseEntry = () => {
                                 value={expense.unitName}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter unit name"
-                                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px' }}
+                                placeholder="Enter unit measurement"
+                                style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
                             />
                         </div>
+
                         <div className="form-group mb-4">
-                            <label style={{ fontWeight: '600', color: '#334155', marginBottom: '8px', display: 'block' }}>Rate Per Unit (₹)</label>
+                            <label style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.9rem' }}>RATE PER UNIT (₹):</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -128,24 +103,24 @@ const AgroExpenseEntry = () => {
                                 value={expense.ratePerUnit}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter rate per unit"
-                                style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '12px' }}
+                                placeholder="Enter base unit cost"
+                                style={{ background: '#07171e', color: '#ffffff', fontWeight: '700', fontSize: '1rem', border: '1.5px solid rgba(255,255,255,0.2)' }}
                             />
                         </div>
                         
-                        <div className="d-flex" style={{ gap: '15px', marginTop: '30px' }}>
+                        <div style={{ display: 'flex', gap: '14px', marginTop: '28px' }}>
                             <button 
                                 type="submit" 
-                                className="btn btn-success" 
-                                style={{ flex: 1, padding: '12px', borderRadius: '8px', fontWeight: '600', fontSize: '1.1rem' }}
+                                className="btn btn-success flex-grow-1"
+                                style={{ fontWeight: '900', padding: '12px' }}
                             >
                                 Save Expense
                             </button>
                             <button 
                                 type="button" 
-                                className="btn btn-secondary" 
-                                onClick={() => navigate("/farmer-menu")}
-                                style={{ flex: 1, padding: '12px', borderRadius: '8px', fontWeight: '600', fontSize: '1.1rem', background: '#64748b', border: 'none' }}
+                                className="btn btn-secondary flex-grow-1" 
+                                onClick={() => navigate("/expense-list")}
+                                style={{ fontWeight: '800', padding: '12px' }}
                             >
                                 Cancel
                             </button>
@@ -153,7 +128,7 @@ const AgroExpenseEntry = () => {
                     </form>
                 </div>
             </div>
-        </div>
+        </BlurAdminLayout>
     );
 };
 
