@@ -32,17 +32,24 @@ public class CropController {
 	
 	@Autowired
 	private FarmUserService userService;
+
+	@Autowired
+	private edu.infosys.farmVerseApplication.service.CropExcelAuditService excelAuditService;
 	
 	@PostMapping("/crop")
 	public void addCrop(@RequestBody Crop crop) {
+		service.validateCropArea(crop);
 		Crop newCrop=service.setUsername(crop);
 		
 	    cropDao.addCrop(newCrop);
+		service.archiveCropToExcel(newCrop);
 	}
 	
 	@PutMapping("/crop")
 	public void updateCrop(@RequestBody Crop crop) {
-	  cropDao.addCrop(crop);
+		service.validateCropArea(crop);
+	    cropDao.addCrop(crop);
+		service.archiveCropToExcel(crop);
 	}
  
 	@GetMapping("/crop/{id}")
@@ -74,7 +81,18 @@ public class CropController {
 		// TODO Auto-generated method stub
 		return service.generateCropId();
 	}
- 
-	
-	
+
+	@GetMapping("/crop/download-excel")
+	public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadCropExcel() throws java.io.IOException {
+		java.io.File file = excelAuditService.getGeneratedExcelFile();
+		if (!file.exists()) {
+			return org.springframework.http.ResponseEntity.notFound().build();
+		}
+		org.springframework.core.io.InputStreamResource resource = new org.springframework.core.io.InputStreamResource(new java.io.FileInputStream(file));
+		return org.springframework.http.ResponseEntity.ok()
+			.header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=crop_master_history.xlsx")
+			.contentType(org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+			.contentLength(file.length())
+			.body(resource);
+	}
 }

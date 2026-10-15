@@ -3,13 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { getExpectedExpenses } from '../../Services/AIService';
 import { addCropInput } from '../../Services/CropInputService';
+import { getCropsByUsername } from '../../Services/CropService';
 import '../../DisplayView.css';
 
 const CropInputView = () => {
     let navigate = useNavigate();
     let param = useParams();
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [crops, setCrops] = useState([]);
+    const [selectedCropId, setSelectedCropId] = useState(param.cid || '');
     const [loading, setLoading] = useState(true);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [cropInput, setCropInput] = useState({
         cropId: "",
         cropName: "",
@@ -24,26 +27,44 @@ const CropInputView = () => {
         tractorHour: 0
     });
 
-    const loadCropInputData = () => {
+    // Load user's registered crops
+    useEffect(() => {
+        getCropsByUsername().then((res) => {
+            const list = res.data || [];
+            setCrops(list);
+            if (!param.cid && list.length > 0) {
+                setSelectedCropId(list[0].cropId);
+            }
+        }).catch(err => {
+            console.error("Error fetching crops in CropInputView:", err);
+        });
+    }, [param.cid]);
+
+    // Load resource inputs for selected crop
+    useEffect(() => {
+        const targetId = param.cid || selectedCropId;
+        if (!targetId) return;
+
         setLoading(true);
-        getExpectedExpenses(param.cid).then(response => {
+        getExpectedExpenses(targetId).then(response => {
             if (response.data) {
                 setCropInput(response.data);
             }
+            setLoading(false);
         }).catch(error => {
             console.error("Error fetching crop input data", error);
-        }).finally(() => {
             setLoading(false);
         });
-    }
+    }, [param.cid, selectedCropId]);
 
-    useEffect(() => {
-        loadCropInputData();
-    }, [param.cid]);
+    const handleCropSelect = (cid) => {
+        setSelectedCropId(cid);
+        navigate(`/crop-inputs/${cid}`);
+    };
 
     const returnBack = () => {
         navigate('/crop-list');
-    }
+    };
 
     const handleSave = () => {
         addCropInput(cropInput).then(response => {
@@ -54,25 +75,85 @@ const CropInputView = () => {
         }).catch(error => {
             console.error("Error saving crop input data", error);
         });
-    }
+    };
+
+    const currentCropId = cropInput.cropId || param.cid || selectedCropId;
 
     return (
         <BlurAdminLayout title="CROP RESOURCE INPUTS" breadcrumb="Home / Crops / Resource Estimator">
             <div style={{ maxWidth: '750px', margin: '20px auto' }}>
-                <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
-                    <div className="menu-header" style={{ marginBottom: '28px', textAlign: 'center' }}>
-                        <span className="blur-badge blur-badge-mint" style={{ padding: '5px 14px', fontSize: '0.8rem', fontWeight: '800', marginBottom: '12px', display: 'inline-block' }}>
-                            Resource Estimator
-                        </span>
-                        <h2 style={{ fontSize: '1.9rem', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>
-                            Crop #{param.cid} Resource Demands
-                        </h2>
-                        <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>
-                            Review predicted agricultural resources and input parameters for optimal yield
-                        </p>
+                
+                {/* Crop Selector Header when multiple crops exist */}
+                {crops.length > 0 && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        marginBottom: '20px',
+                        background: '#0d222a',
+                        padding: '14px 20px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(255, 255, 255, 0.18)',
+                        flexWrap: 'wrap'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '1.2rem' }}>🌾</span>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.92rem' }}>SELECT CROP:</span>
+                            <select
+                                value={param.cid || selectedCropId}
+                                onChange={(e) => handleCropSelect(e.target.value)}
+                                style={{
+                                    background: '#07171e',
+                                    color: '#ffffff',
+                                    border: '1.5px solid #00d2aa',
+                                    borderRadius: '8px',
+                                    padding: '7px 14px',
+                                    fontWeight: '800',
+                                    fontSize: '0.92rem',
+                                    cursor: 'pointer',
+                                    outline: 'none'
+                                }}
+                            >
+                                {crops.map((c) => (
+                                    <option key={c.cropId} value={c.cropId} style={{ background: '#0d222a', color: '#ffffff' }}>
+                                        Crop #{c.cropId} - {c.cropName} (Plot #{c.farmId}, {c.cropArea} Ac, {c.soil})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
+                )}
 
-                    <div className="table-responsive" style={{ margin: '0 0 28px 0', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                {crops.length === 0 && !loading ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#0d222a', borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                        <h3 style={{ color: '#ffffff', fontWeight: '900', marginBottom: '10px' }}>No Crops Registered Yet</h3>
+                        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '20px' }}>Please register a crop parcel first to calculate resource inputs.</p>
+                        <button className="btn btn-primary" onClick={() => navigate('/crop-add')} style={{ padding: '10px 24px', fontWeight: '800' }}>
+                            + Add New Crop
+                        </button>
+                    </div>
+                ) : (
+                    <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                        <div className="menu-header" style={{ marginBottom: '28px', textAlign: 'center' }}>
+                            <span className="blur-badge blur-badge-mint" style={{ padding: '5px 14px', fontSize: '0.8rem', fontWeight: '800', marginBottom: '12px', display: 'inline-block' }}>
+                                Resource Estimator
+                            </span>
+                            <h2 style={{ fontSize: '1.9rem', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>
+                                Crop #{currentCropId} Resource Demands
+                            </h2>
+                            <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>
+                                Review predicted agricultural resources and input parameters for optimal yield
+                            </p>
+                        </div>
+
+                        {loading ? (
+                            <div style={{ textAlign: 'center', padding: '40px 0', color: '#00e5ff', fontWeight: '800' }}>
+                                🔄 Calculating Resource Demands via AI...
+                            </div>
+                        ) : (
+                          <>
+                            <div className="table-responsive" style={{ margin: '0 0 28px 0', border: '1.5px solid rgba(255,255,255,0.18)' }}>
                         <table className="table">
                             <tbody>
                                 <tr>
@@ -161,7 +242,10 @@ const CropInputView = () => {
                             {loading ? "Computing Demands..." : "Save Details ✓"}
                         </button>
                     </div>
+                  </>
+                )}
                 </div>
+              )}
             </div>
         </BlurAdminLayout>
     );

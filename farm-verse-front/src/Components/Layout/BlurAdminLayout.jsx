@@ -195,7 +195,7 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
 
           <div className="blur-nav-dropdown">
             <div 
-              className={`blur-nav-item ${currentPath.includes('/final-crop-report') || currentPath.includes('/farm-crop') ? 'active-category' : ''}`}
+              className={`blur-nav-item ${currentPath.includes('final-crop') || currentPath.includes('farm-crop') || currentPath.includes('yield') || currentPath.includes('crop-input') || currentPath.includes('profit') ? 'active-category' : ''}`}
               onClick={() => toggleSubmenu('reports')}
             >
               <div className="blur-nav-item-content">
@@ -212,16 +212,16 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
             </div>
             {openSubmenus.reports && (
               <div className="blur-submenu">
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/yield-predictions" className={`blur-sub-link ${currentPath.includes('yield') || currentPath.includes('/farm-crop') ? 'active' : ''}`}>
                   <span>•</span> Yield AI Predictions
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/crop-inputs" className={`blur-sub-link ${currentPath.includes('crop-input') ? 'active' : ''}`}>
                   <span>•</span> Crop Input Estimator
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/final-crop-reports" className={`blur-sub-link ${currentPath.includes('final-crop') ? 'active' : ''}`}>
                   <span>•</span> Final Crop Reports
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/crop-profit-reports" className={`blur-sub-link ${currentPath.includes('profit') ? 'active' : ''}`}>
                   <span>•</span> Profit & AI Review Engine
                 </Link>
               </div>
@@ -252,7 +252,7 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
             </div>
 
             {/* Profile Avatar with Dropdown */}
-            <div className="blur-profile-wrap" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+            <div className="blur-profile-wrap" onClick={() => setShowProfileMenu(!showProfileMenu)} title="Account Settings">
               <div 
                 className="blur-profile-avatar" 
                 style={{ 
@@ -264,11 +264,12 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
                   borderRadius: '50%',
                   width: '38px',
                   height: '38px',
-                  color: '#00e5ff'
+                  color: '#00e5ff',
+                  cursor: 'pointer'
                 }}
                 title="User Profile & Menu"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
