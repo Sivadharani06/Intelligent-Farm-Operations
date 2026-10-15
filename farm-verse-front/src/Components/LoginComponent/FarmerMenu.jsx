@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { getFarmsByUsername } from '../../Services/FarmService';
 import { getCropsByUsername } from '../../Services/CropService';
-import { getWeatherByFarmId, getRegionalWeather } from '../../Services/WeatherService';
 import '../../DisplayView.css';
 
 const FarmerMenu = () => {
@@ -17,63 +16,6 @@ const FarmerMenu = () => {
   const [totalFarmArea, setTotalFarmArea] = useState(0);
   const [totalCropArea, setTotalCropArea] = useState(0);
   const [totalYield, setTotalYield] = useState(0);
-
-  // Weather state & live backend telemetry
-  const [selectedPlotWeather, setSelectedPlotWeather] = useState("regional");
-  const [isWeatherRefreshing, setIsWeatherRefreshing] = useState(false);
-  const [weatherLastUpdated, setWeatherLastUpdated] = useState("Live Synced");
-
-  const [weatherData, setWeatherData] = useState({
-    farmId: null,
-    farmName: "Regional Agro-Station",
-    soil: "Alluvial",
-    temp: 28,
-    feelsLike: 30,
-    condition: "Scattered Clouds",
-    conditionIcon: "🌤️",
-    humidity: 71,
-    rainProb: 20,
-    windSpeed: 16,
-    soilMoisture: 72,
-    soilMoistureStatus: "Optimal Root Zone",
-    solarUV: "4.8 (Moderate)",
-    barometer: 1012,
-    advisoryAlert: "Connecting to farm microclimate sensor feed and regional telemetry...",
-    forecast: [
-      { day: "Today", icon: "🌤️", tempMax: 28, tempMin: 21, rain: "20%", advice: "Normal field operations" },
-      { day: "Tomorrow", icon: "🌧️", tempMax: 25, tempMin: 19, rain: "75%", advice: "Heavy precipitation alert" },
-      { day: "Day 3", icon: "⛅", tempMax: 29, tempMin: 22, rain: "15%", advice: "Clearing skies & favorable winds" }
-    ]
-  });
-
-  const fetchWeather = (farmIdOrPlot) => {
-    setIsWeatherRefreshing(true);
-    const apiCall = (farmIdOrPlot && farmIdOrPlot !== "regional" && !isNaN(farmIdOrPlot))
-      ? getWeatherByFarmId(farmIdOrPlot)
-      : getRegionalWeather();
-
-    apiCall.then((res) => {
-      if (res.data) {
-        setWeatherData(res.data);
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        setWeatherLastUpdated(`Updated at ${timeStr}`);
-      }
-    }).catch((err) => {
-      console.warn("Backend weather API note:", err);
-      setWeatherLastUpdated("Refreshed");
-    }).finally(() => {
-      setIsWeatherRefreshing(false);
-    });
-  };
-
-  const handleRefreshWeather = () => {
-    fetchWeather(selectedPlotWeather);
-  };
-
-  const handlePlotSelectChange = (newVal) => {
-    setSelectedPlotWeather(newVal);
-    fetchWeather(newVal);
-  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -96,18 +38,8 @@ const FarmerMenu = () => {
       setTotalCropArea(cropAreaSum);
       setTotalYield(yieldSum);
 
-      // Auto select first farm plot for weather and fetch dynamic telemetry
-      if (farms.length > 0 && farms[0].farmId) {
-        setSelectedPlotWeather(farms[0].farmId);
-        fetchWeather(farms[0].farmId);
-      } else {
-        setSelectedPlotWeather("regional");
-        fetchWeather("regional");
-      }
-
       setIsLoading(false);
     }).catch(() => {
-      fetchWeather("regional");
       setIsLoading(false);
     });
   }, []);
@@ -181,15 +113,6 @@ const FarmerMenu = () => {
     if (c.includes("sugarcane")) return "🎋";
     if (c.includes("millet") || c.includes("veg")) return "🥦";
     return "🌿";
-  };
-
-  const getWeatherIcon = (condition, fallbackIcon) => {
-    if (fallbackIcon && fallbackIcon.length > 0 && !fallbackIcon.includes("?")) return fallbackIcon;
-    const c = (condition || "").toLowerCase();
-    if (c.includes("rain") || c.includes("shower")) return "🌧️";
-    if (c.includes("cloud")) return "⛅";
-    if (c.includes("sun") || c.includes("clear") || c.includes("warm")) return "☀️";
-    return "🌤️";
   };
 
   // SVG Circular Gauge Component with high contrast text
@@ -428,188 +351,7 @@ const FarmerMenu = () => {
             )}
           </div>
         </div>
-
-        {/* ROW 3: AGRI-WEATHER TELEMETRY & RAIN ADVISORY WIDGET */}
-        <div className="blur-weather-panel">
-          <div className="blur-weather-header">
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.4rem' }}>🛰️</span>
-                <span className="blur-panel-heading" style={{ color: '#00e5ff', fontWeight: '900', fontSize: '0.95rem', letterSpacing: '0.08em' }}>
-                  AGRI-WEATHER TELEMETRY & RAIN ADVISORY
-                </span>
-                <span className="blur-badge blur-badge-mint" style={{ padding: '3px 8px', fontSize: '0.72rem', fontWeight: '800' }}>
-                  LIVE SENSOR FEED
-                </span>
-              </div>
-              <div style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: '4px' }}>
-                Microclimate weather data synced for precision irrigation & field operations • {weatherLastUpdated}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <select
-                value={selectedPlotWeather}
-                onChange={(e) => handlePlotSelectChange(e.target.value)}
-                style={{
-                  background: '#07171e',
-                  color: '#ffffff',
-                  border: '1.5px solid rgba(0, 229, 255, 0.4)',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  fontWeight: '800',
-                  fontSize: '0.88rem',
-                  cursor: 'pointer'
-                }}
-              >
-                {farmsList.length > 0 ? (
-                  farmsList.map((f, idx) => (
-                    <option key={idx} value={f.farmId}>
-                      🌾 {f.farmName || `Plot ${f.farmId}`} ({f.soil || 'Plot'})
-                    </option>
-                  ))
-                ) : null}
-                <option value="regional">🚜 Regional Agro-Station</option>
-              </select>
-
-              <button
-                type="button"
-                onClick={handleRefreshWeather}
-                style={{
-                  background: isWeatherRefreshing ? 'rgba(0, 210, 170, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#ffffff',
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  fontWeight: '800',
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <span style={{ transform: isWeatherRefreshing ? 'rotate(360deg)' : 'none', transition: 'transform 0.6s' }}>🔄</span>
-                <span>{isWeatherRefreshing ? 'Syncing...' : 'Sync Data'}</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="blur-weather-grid">
-            {/* Left Box: Current Temperature & Metrics Pills */}
-            <div className="blur-weather-current-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                    <span style={{ color: '#ffffff', fontSize: '3.2rem', fontWeight: '900', letterSpacing: '-0.03em' }}>
-                      {weatherData.temp}°C
-                    </span>
-                    <span style={{ fontSize: '2.4rem' }}>{getWeatherIcon(weatherData.condition, weatherData.conditionIcon)}</span>
-                  </div>
-                  <div style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '800' }}>
-                    {weatherData.condition}
-                  </div>
-                  <div style={{ color: '#cbd5e1', fontSize: '0.82rem', marginTop: '2px' }}>
-                    Feels like {weatherData.feelsLike}°C • Barometer {weatherData.barometer || 1012} hPa
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'right', background: 'rgba(0, 210, 170, 0.1)', border: '1px solid rgba(0, 210, 170, 0.3)', padding: '12px 16px', borderRadius: '10px' }}>
-                  <div style={{ color: '#00d2aa', fontSize: '0.75rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    SOIL MOISTURE
-                  </div>
-                  <div style={{ color: '#ffffff', fontSize: '1.65rem', fontWeight: '900' }}>
-                    {weatherData.soilMoisture}%
-                  </div>
-                  <div style={{ color: '#00d2aa', fontSize: '0.75rem', fontWeight: '800' }}>
-                    {weatherData.soilMoistureStatus || 'Optimal Root Zone'}
-                  </div>
-                </div>
-              </div>
-
-              {/* Telemetry Metric Pills */}
-              <div className="blur-weather-metrics-pills">
-                <div className="blur-weather-pill">
-                  <span style={{ fontSize: '1.3rem' }}>💧</span>
-                  <div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase' }}>HUMIDITY</div>
-                    <div style={{ color: '#ffffff', fontWeight: '900', fontSize: '0.98rem' }}>{weatherData.humidity}%</div>
-                  </div>
-                </div>
-
-                <div className="blur-weather-pill">
-                  <span style={{ fontSize: '1.3rem' }}>🌧️</span>
-                  <div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase' }}>RAIN PROBABILITY</div>
-                    <div style={{ color: weatherData.rainProb > 40 ? '#00e5ff' : '#ffffff', fontWeight: '900', fontSize: '0.98rem' }}>
-                      {weatherData.rainProb}%
-                    </div>
-                  </div>
-                </div>
-
-                <div className="blur-weather-pill">
-                  <span style={{ fontSize: '1.3rem' }}>💨</span>
-                  <div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase' }}>WIND SPEED</div>
-                    <div style={{ color: '#ffffff', fontWeight: '900', fontSize: '0.98rem' }}>{weatherData.windSpeed} km/h</div>
-                  </div>
-                </div>
-
-                <div className="blur-weather-pill">
-                  <span style={{ fontSize: '1.3rem' }}>☀️</span>
-                  <div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase' }}>SOLAR UV</div>
-                    <div style={{ color: '#ffffff', fontWeight: '900', fontSize: '0.98rem' }}>{weatherData.solarUV}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Box: 3-Day Agro-Weather Forecast */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'space-between' }}>
-              <div style={{ color: '#00e5ff', fontSize: '0.8rem', fontWeight: '900', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '2px' }}>
-                3-DAY PRECISION AGRO FORECAST
-              </div>
-
-              {(weatherData.forecast || []).map((fc, idx) => (
-                <div key={idx} className="blur-weather-forecast-card">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{getWeatherIcon(fc.advice, fc.icon)}</span>
-                    <div>
-                      <div style={{ color: '#ffffff', fontWeight: '800', fontSize: '0.88rem' }}>{fc.day}</div>
-                      <div style={{ color: '#00d2aa', fontSize: '0.75rem', fontWeight: '700' }}>{fc.advice}</div>
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ color: '#ffffff', fontWeight: '900', fontSize: '0.92rem' }}>
-                      {fc.tempMax}° / {fc.tempMin}°C
-                    </div>
-                    <div style={{ color: '#00e5ff', fontSize: '0.75rem', fontWeight: '800' }}>
-                      🌧️ {fc.rain} Rain
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom Agronomic Advisory Banner */}
-          <div className="blur-weather-advisory-banner">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <span style={{ fontSize: '1.1rem' }}>🌱</span>
-              <span style={{ color: '#00d2aa', fontWeight: '900', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                SMART AGRONOMIC ADVISORY FOR CROP OPERATIONS
-              </span>
-            </div>
-            <p style={{ color: '#ffffff', fontSize: '0.92rem', fontWeight: '600', lineHeight: '1.55', margin: 0 }}>
-              {weatherData.advisoryAlert}
-            </p>
-          </div>
-        </div>
-
-        {/* ROW 4: Farm Operations Control Matrix */}
+        {/* ROW 3: Farm Operations Control Matrix */}
         <div className="blur-section-divider" style={{ marginTop: '28px', marginBottom: '16px' }}>
           <span className="blur-section-title" style={{ color: '#00d2aa', fontWeight: '900', fontSize: '0.9rem', letterSpacing: '0.08em' }}>
             INTELLIGENT FARM OPERATIONS MATRIX

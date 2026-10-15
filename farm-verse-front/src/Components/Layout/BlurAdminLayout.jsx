@@ -8,7 +8,6 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   
   // Expanded menu items state
@@ -196,7 +195,7 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
 
           <div className="blur-nav-dropdown">
             <div 
-              className={`blur-nav-item ${currentPath.includes('/final-crop-report') || currentPath.includes('/farm-crop') ? 'active-category' : ''}`}
+              className={`blur-nav-item ${currentPath.includes('final-crop') || currentPath.includes('farm-crop') || currentPath.includes('yield') || currentPath.includes('crop-input') || currentPath.includes('profit') ? 'active-category' : ''}`}
               onClick={() => toggleSubmenu('reports')}
             >
               <div className="blur-nav-item-content">
@@ -213,16 +212,16 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
             </div>
             {openSubmenus.reports && (
               <div className="blur-submenu">
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/yield-predictions" className={`blur-sub-link ${currentPath.includes('yield') || currentPath.includes('/farm-crop') ? 'active' : ''}`}>
                   <span>•</span> Yield AI Predictions
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/crop-inputs" className={`blur-sub-link ${currentPath.includes('crop-input') ? 'active' : ''}`}>
                   <span>•</span> Crop Input Estimator
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/final-crop-reports" className={`blur-sub-link ${currentPath.includes('final-crop') ? 'active' : ''}`}>
                   <span>•</span> Final Crop Reports
                 </Link>
-                <Link to="/crop-list" className="blur-sub-link">
+                <Link to="/crop-profit-reports" className={`blur-sub-link ${currentPath.includes('profit') ? 'active' : ''}`}>
                   <span>•</span> Profit & AI Review Engine
                 </Link>
               </div>
@@ -252,49 +251,23 @@ const BlurAdminLayout = ({ children, title = "DASHBOARD", breadcrumb = "Home / D
               <span>Intelligent Farm Operations</span>
             </div>
 
-            {/* Notification Bell with Badge */}
-            <div className="blur-icon-badge-wrap" onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              <span className="blur-badge blur-badge-orange">3</span>
-
-              {showNotifications && (
-                <div className="blur-dropdown-panel" onClick={(e) => e.stopPropagation()}>
-                  <div className="blur-panel-header">Farm Alerts (3)</div>
-                  <div className="blur-panel-item">
-                    <span className="blur-dot blur-dot-mint"></span>
-                    <div>
-                      <div className="blur-panel-title">Soil Moisture Optimal</div>
-                      <div className="blur-panel-time">Plot A • 5 mins ago</div>
-                    </div>
-                  </div>
-                  <div className="blur-panel-item">
-                    <span className="blur-dot blur-dot-orange"></span>
-                    <div>
-                      <div className="blur-panel-title">Scheduled Harvest Window Approaching</div>
-                      <div className="blur-panel-time">Plot B • 1 hour ago</div>
-                    </div>
-                  </div>
-                  <div className="blur-panel-item">
-                    <span className="blur-dot blur-dot-cyan"></span>
-                    <div>
-                      <div className="blur-panel-title">Agro Resource Rates Synchronized</div>
-                      <div className="blur-panel-time">System • 3 hours ago</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Profile Avatar with Dropdown */}
-            <div className="blur-profile-wrap" onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}>
-              <img 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" 
-                alt="Profile Avatar" 
-                className="blur-profile-avatar"
-              />
+            <div className="blur-profile-wrap" onClick={() => setShowProfileMenu(!showProfileMenu)} title="Account Settings">
+              <div 
+                className="blur-profile-avatar" 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  background: 'rgba(0, 210, 170, 0.15)',
+                  cursor: 'pointer' 
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00d2aa" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
               <span className="blur-status-indicator"></span>
 
               {showProfileMenu && (

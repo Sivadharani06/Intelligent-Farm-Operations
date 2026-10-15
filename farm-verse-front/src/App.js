@@ -27,9 +27,24 @@ function App() {
        <Route path="/crop-add" element={<CropEntry/>}/>
        <Route path="/crop-list" element={<CropList/>}/>
        <Route path="/farm-crop/:cid" element={<FarmCropReport/>}/>
+       <Route path="/farm-crop" element={<FarmCropReport/>}/>
+       <Route path="/yield-predictions" element={<FarmCropReport/>}/>
+       <Route path="/yield-predictions/:cid" element={<FarmCropReport/>}/>
+
        <Route path="/final-crop-report/:cid" element={<FinalCropReport/>}/>
+       <Route path="/final-crop-report" element={<FinalCropReport/>}/>
+       <Route path="/final-crop-reports" element={<FinalCropReport/>}/>
+       <Route path="/final-crop-reports/:cid" element={<FinalCropReport/>}/>
+
        <Route path="/crop-profit-report/:cid" element={<CropProfitReport/>}/>
+       <Route path="/crop-profit-report" element={<CropProfitReport/>}/>
+       <Route path="/crop-profit-reports" element={<CropProfitReport/>}/>
+       <Route path="/crop-profit-reports/:cid" element={<CropProfitReport/>}/>
+
        <Route path="/crop-input/:cid" element={<CropInputView/>}/>
+       <Route path="/crop-input" element={<CropInputView/>}/>
+       <Route path="/crop-inputs" element={<CropInputView/>}/>
+       <Route path="/crop-inputs/:cid" element={<CropInputView/>}/>
        <Route path="/expense-list" element={<AgroExpenseList/>}/>
        <Route path="/expense-add" element={<AgroExpenseEntry/>}/>
        </Routes>

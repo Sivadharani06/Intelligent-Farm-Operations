@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { getCropExpenseCalculation } from '../../Services/CropInputService';
+import { getCropsByUsername } from '../../Services/CropService';
 import '../../DisplayView.css';
 
 const FinalCropReport = () => {
     let navigate = useNavigate();
     let param = useParams();
+    const [crops, setCrops] = useState([]);
+    const [selectedCropId, setSelectedCropId] = useState(param.cid || '');
+    const [loading, setLoading] = useState(false);
     const [report, setReport] = useState({
         farmId: 0,
         farmName: "",
@@ -30,21 +34,42 @@ const FinalCropReport = () => {
         total: 0.0
     });
 
-    const setFinalReportData = () => {
-        getCropExpenseCalculation(param.cid).then(response => {
+    // Load user's crops
+    useEffect(() => {
+        getCropsByUsername().then(res => {
+            const list = res.data || [];
+            setCrops(list);
+            if (!param.cid && list.length > 0) {
+                setSelectedCropId(list[0].cropId);
+            }
+        }).catch(err => {
+            console.error("Error fetching crops in FinalCropReport:", err);
+        });
+    }, [param.cid]);
+
+    // Load final expense report for active crop
+    useEffect(() => {
+        const targetId = param.cid || selectedCropId;
+        if (!targetId) return;
+
+        setLoading(true);
+        getCropExpenseCalculation(targetId).then(response => {
             setReport(response.data);
+            setLoading(false);
         }).catch(error => {
             console.error("Error fetching crop report: ", error);
+            setLoading(false);
         });
-    }
+    }, [param.cid, selectedCropId]);
 
-    useEffect(() => {
-        setFinalReportData();
-    }, [param.cid]);
+    const handleCropSelect = (cid) => {
+        setSelectedCropId(cid);
+        navigate(`/final-crop-reports/${cid}`);
+    };
 
     const returnBack = () => {
         navigate('/crop-list');
-    }
+    };
 
     const handleDownloadReport = () => {
         const docHtml = `<!DOCTYPE html>
@@ -111,9 +136,63 @@ const FinalCropReport = () => {
         URL.revokeObjectURL(url);
     };
 
+    const activeCrop = report.cropId || param.cid || selectedCropId;
+
     return (
         <BlurAdminLayout title="FINAL CROP REPORT" breadcrumb="Home / Crops / Final Crop Report">
             <div style={{ maxWidth: '780px', margin: '20px auto' }}>
+
+                {/* Crop Selector Header when multiple crops exist */}
+                {crops.length > 0 && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        marginBottom: '20px',
+                        background: '#0d222a',
+                        padding: '14px 20px',
+                        borderRadius: '12px',
+                        border: '1.5px solid rgba(255, 255, 255, 0.18)',
+                        flexWrap: 'wrap'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '1.2rem' }}>🌾</span>
+                            <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.92rem' }}>SELECT CROP:</span>
+                            <select
+                                value={param.cid || selectedCropId}
+                                onChange={(e) => handleCropSelect(e.target.value)}
+                                style={{
+                                    background: '#07171e',
+                                    color: '#ffffff',
+                                    border: '1.5px solid #00d2aa',
+                                    borderRadius: '8px',
+                                    padding: '7px 14px',
+                                    fontWeight: '800',
+                                    fontSize: '0.92rem',
+                                    cursor: 'pointer',
+                                    outline: 'none'
+                                }}
+                            >
+                                {crops.map((c) => (
+                                    <option key={c.cropId} value={c.cropId} style={{ background: '#0d222a', color: '#ffffff' }}>
+                                        Crop #{c.cropId} - {c.cropName} (Plot #{c.farmId}, {c.cropArea} Ac, {c.soil})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                )}
+
+                {crops.length === 0 && !loading ? (
+                    <div style={{ textAlign: 'center', padding: '40px 20px', background: '#0d222a', borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+                        <h3 style={{ color: '#ffffff', fontWeight: '900', marginBottom: '10px' }}>No Crops Registered Yet</h3>
+                        <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '20px' }}>Please register a crop parcel first to view final audit reports.</p>
+                        <button className="btn btn-primary" onClick={() => navigate('/crop-add')} style={{ padding: '10px 24px', fontWeight: '800' }}>
+                            + Add New Crop
+                        </button>
+                    </div>
+                ) : (
                 <div className="blur-card" style={{ padding: '36px', background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)', borderRadius: '14px' }}>
                     
                     {/* Header */}
@@ -122,7 +201,7 @@ const FinalCropReport = () => {
                             Final Crop Yield & Expense Audit
                         </h2>
                         <p style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700', marginTop: '8px' }}>
-                            Comprehensive analytical audit for Crop ID: <span style={{ color: '#ffffff', textDecoration: 'underline' }}>#{report.cropId}</span>
+                            Comprehensive analytical audit for Crop ID: <span style={{ color: '#ffffff', textDecoration: 'underline' }}>#{activeCrop}</span>
                         </p>
                     </div>
 
@@ -243,7 +322,7 @@ const FinalCropReport = () => {
                             <span>📥</span> Download Report
                         </button>
                         <button 
-                            onClick={() => navigate(`/crop-profit-report/${param.cid}`)} 
+                            onClick={() => navigate(`/crop-profit-report/${activeCrop}`)} 
                             className="btn btn-primary" 
                             style={{ padding: '12px 28px', fontSize: '1rem', fontWeight: '900', background: '#00d2aa', borderColor: '#00d2aa', color: '#07161c' }}
                         >
@@ -252,6 +331,7 @@ const FinalCropReport = () => {
                     </div>
 
                 </div>
+              )}
             </div>
         </BlurAdminLayout>
     );

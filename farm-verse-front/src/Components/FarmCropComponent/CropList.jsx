@@ -45,9 +45,38 @@ const CropList = () => {
     return (
         <BlurAdminLayout title="CROP OPERATIONS" breadcrumb="Home / Crops / Crops List">
             <div className="farmer-menu-container" style={{ background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
-                <div className="menu-header" style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div className="menu-header" style={{ textAlign: 'center', marginBottom: '20px' }}>
                     <h1 className="menu-title" style={{ fontSize: '2.1rem', fontWeight: '900', color: '#ffffff' }}>Crop Operations Center</h1>
                     <p className="menu-subtitle" style={{ color: '#00e5ff', fontSize: '1.05rem', fontWeight: '700' }}>Planting timelines, harvesting schedules, resource inputs & yield calculations</p>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginBottom: '28px', flexWrap: 'wrap' }}>
+                    <button 
+                        className="btn btn-primary" 
+                        style={{ padding: '10px 22px', fontWeight: '800', borderRadius: '8px' }}
+                        onClick={() => navigate('/crop-add')}
+                    >
+                        + Add New Crop
+                    </button>
+                    <a 
+                        href="http://localhost:9696/farmverse/crop/download-excel" 
+                        className="btn btn-outline-success" 
+                        style={{ 
+                            padding: '10px 22px', 
+                            fontWeight: '800', 
+                            borderRadius: '8px', 
+                            background: 'rgba(0, 210, 170, 0.12)', 
+                            border: '1.5px solid #00d2aa', 
+                            color: '#00d2aa',
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}
+                        download="crop_master_history.xlsx"
+                    >
+                        📊 Download Excel Archive (.xlsx)
+                    </a>
                 </div>
 
                 {crops.length === 0 ? (

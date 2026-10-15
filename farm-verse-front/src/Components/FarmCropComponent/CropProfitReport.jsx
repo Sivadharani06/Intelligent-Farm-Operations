@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import BlurAdminLayout from '../Layout/BlurAdminLayout';
 import { getCropExpenseCalculation } from '../../Services/CropInputService';
 import { getExpectedYield } from '../../Services/AIService';
-import { getFarmCropById } from '../../Services/CropService';
+import { getFarmCropById, getCropsByUsername } from '../../Services/CropService';
 import '../../DisplayView.css';
 
 // Regional Market Price Benchmarks (₹ per Metric Ton)
@@ -39,6 +39,8 @@ const CropProfitReport = () => {
   const navigate = useNavigate();
   const param = useParams();
 
+  const [crops, setCrops] = useState([]);
+  const [selectedCropId, setSelectedCropId] = useState(param.cid || '');
   const [report, setReport] = useState({
     farmId: 0,
     farmName: "",
@@ -66,15 +68,34 @@ const CropProfitReport = () => {
   const [isCustomPrice, setIsCustomPrice] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadReportData = () => {
+  // Load user's registered crops
+  useEffect(() => {
+    getCropsByUsername().then(res => {
+      const list = res.data || [];
+      setCrops(list);
+      if (!param.cid && list.length > 0) {
+        setSelectedCropId(list[0].cropId);
+      }
+    }).catch(err => {
+      console.error("Error fetching crops in CropProfitReport:", err);
+    });
+  }, [param.cid]);
+
+  const loadReportData = (targetCid) => {
+    const targetId = targetCid || param.cid || selectedCropId;
+    if (!targetId) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    getCropExpenseCalculation(param.cid)
+    getCropExpenseCalculation(targetId)
       .then(response => {
         const data = response.data || {};
         
         // If yield is 0 or null, retrieve AI predicted yield automatically
         if (!data.yield || data.yield <= 0) {
-          getExpectedYield(param.cid)
+          getExpectedYield(targetId)
             .then(yRes => {
               if (yRes.data && yRes.data.yield) {
                 data.yield = yRes.data.yield;
@@ -91,7 +112,7 @@ const CropProfitReport = () => {
       .catch(error => {
         console.error("Error fetching crop expense calculation: ", error);
         // Fallback to crop details if expense inputs have not been logged yet
-        getFarmCropById(param.cid)
+        getFarmCropById(targetId)
           .then(cRes => {
             const fallback = {
               cropId: cRes.data.cropId,
@@ -132,8 +153,16 @@ const CropProfitReport = () => {
   };
 
   useEffect(() => {
-    loadReportData();
-  }, [param.cid]);
+    const target = param.cid || selectedCropId;
+    if (target) {
+      loadReportData(target);
+    }
+  }, [param.cid, selectedCropId]);
+
+  const handleCropSelect = (cid) => {
+    setSelectedCropId(cid);
+    navigate(`/crop-profit-reports/${cid}`);
+  };
 
   // Financial & Profit Calculations
   const area = Number(report.cropArea) > 0 ? Number(report.cropArea) : 1.0;
@@ -372,7 +401,7 @@ const CropProfitReport = () => {
               ← Crop List
             </button>
             <button 
-              onClick={() => navigate(`/final-crop-report/${param.cid}`)} 
+              onClick={() => navigate(`/final-crop-report/${report.cropId || param.cid || selectedCropId}`)} 
               className="btn btn-outline-info" 
               style={{ padding: '10px 18px', fontWeight: '800', fontSize: '0.9rem', borderColor: '#00e5ff', color: '#00e5ff' }}
             >
@@ -395,6 +424,60 @@ const CropProfitReport = () => {
           </div>
         </div>
 
+        {/* Crop Selector Bar */}
+        {crops.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            marginBottom: '20px',
+            background: '#0d222a',
+            padding: '14px 20px',
+            borderRadius: '12px',
+            border: '1.5px solid rgba(255, 255, 255, 0.18)',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '1.2rem' }}>🌾</span>
+              <span style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.92rem' }}>SELECT CROP:</span>
+              <select
+                value={param.cid || selectedCropId}
+                onChange={(e) => handleCropSelect(e.target.value)}
+                style={{
+                  background: '#07171e',
+                  color: '#ffffff',
+                  border: '1.5px solid #00d2aa',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontWeight: '800',
+                  fontSize: '0.92rem',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                {crops.map((c) => (
+                  <option key={c.cropId} value={c.cropId} style={{ background: '#0d222a', color: '#ffffff' }}>
+                    Crop #{c.cropId} - {c.cropName} (Plot #{c.farmId}, {c.cropArea} Ac, {c.soil})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {crops.length === 0 && !loading && (
+          <div style={{ textAlign: 'center', padding: '40px 20px', background: '#0d222a', borderRadius: '12px', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+            <h3 style={{ color: '#ffffff', fontWeight: '900', marginBottom: '10px' }}>No Crops Registered Yet</h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '20px' }}>Please register a crop parcel first to calculate profit intelligence.</p>
+            <button className="btn btn-primary" onClick={() => navigate('/crop-add')} style={{ padding: '10px 24px', fontWeight: '800' }}>
+              + Add New Crop
+            </button>
+          </div>
+        )}
+
+        {crops.length > 0 && (
+          <>
         {/* ROW 1: 4 Key Executive Performance Gauges */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px', marginBottom: '24px' }}>
           {/* Card 1: Net Projected Profit */}
@@ -799,13 +882,15 @@ const CropProfitReport = () => {
             ← Back to Crop List
           </button>
           <button 
-            onClick={() => navigate(`/final-crop-report/${param.cid}`)} 
+            onClick={() => navigate(`/final-crop-report/${report.cropId || param.cid || selectedCropId}`)} 
             className="btn btn-outline-info" 
             style={{ padding: '12px 28px', fontSize: '1rem', fontWeight: '800', borderColor: '#00e5ff', color: '#00e5ff' }}
           >
             📋 View Final Crop Report
           </button>
         </div>
+        </>
+        )}
 
       </div>
     </BlurAdminLayout>
