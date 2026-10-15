@@ -40,16 +40,15 @@ public class CropController {
 	public void addCrop(@RequestBody Crop crop) {
 		service.validateCropArea(crop);
 		Crop newCrop=service.setUsername(crop);
-		
-	    cropDao.addCrop(newCrop);
 		service.archiveCropToExcel(newCrop);
+		cropDao.addCrop(newCrop);
 	}
 	
 	@PutMapping("/crop")
 	public void updateCrop(@RequestBody Crop crop) {
 		service.validateCropArea(crop);
-	    cropDao.addCrop(crop);
 		service.archiveCropToExcel(crop);
+		cropDao.addCrop(crop);
 	}
  
 	@GetMapping("/crop/{id}")

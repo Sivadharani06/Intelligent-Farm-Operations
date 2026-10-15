@@ -52,9 +52,10 @@ public class AIController {
 		 FarmCrop farmCrop2=yService.predictYield(farmCrop1);
         crop.setYield(farmCrop2.getYield());
         crop.setComments(farmCrop2.getComments());
-         cropDao.addCrop(crop);
-        return farmCrop2;
-    }
+		cropDao.addCrop(crop);
+		cService.archiveCropToExcel(crop);
+		return farmCrop2;
+	}
 	
 	/*@PostMapping("/predict")
     public FarmCropInputs getExpectedExpenses(@RequestBody FarmCropInputs cropInputs) {

@@ -115,93 +115,81 @@ const FarmerMenu = () => {
     return "🌿";
   };
 
-  // SVG Circular Gauge Component with high contrast text
-  const CircularProgressGauge = ({ percentage, label, value, strokeColor = "#00d2aa" }) => {
-    const radius = 34;
-    const strokeWidth = 5;
-    const normalizedRadius = radius - strokeWidth / 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
+  // Top Stat Card with agricultural icon badge (no arbitrary 100% percentages)
+  const FarmStatCard = ({ icon, label, value, strokeColor = "#00d2aa", subtext = null }) => {
     return (
       <div className="blur-stat-card" style={{ background: '#0d222a', border: '1.5px solid rgba(255,255,255,0.18)' }}>
-        <div className="blur-gauge-container">
-          <svg height={radius * 2} width={radius * 2} className="blur-gauge-svg">
-            <circle
-              stroke="rgba(0, 210, 170, 0.2)"
-              fill="transparent"
-              strokeWidth={strokeWidth}
-              r={normalizedRadius}
-              cx={radius}
-              cy={radius}
-            />
-            <circle
-              stroke={strokeColor}
-              fill="transparent"
-              strokeWidth={strokeWidth}
-              strokeDasharray={`${circumference} ${circumference}`}
-              style={{ strokeDashoffset }}
-              strokeLinecap="round"
-              r={normalizedRadius}
-              cx={radius}
-              cy={radius}
-              className="blur-gauge-circle"
-            />
-          </svg>
-          <div className="blur-gauge-percent-text" style={{ color: '#ffffff', fontWeight: '900', fontSize: '0.95rem' }}>
-            {percentage}%
-          </div>
+        <div 
+          className="blur-gauge-container"
+          style={{
+            width: '62px',
+            height: '62px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${strokeColor}25 0%, rgba(13,34,42,0.85) 70%)`,
+            border: `2px solid ${strokeColor}`,
+            boxShadow: `0 0 14px ${strokeColor}33`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.75rem',
+            flexShrink: 0
+          }}
+        >
+          <span role="img" aria-label={label}>{icon}</span>
         </div>
         <div className="blur-stat-info">
-          <span className="blur-stat-label" style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.85rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          <span className="blur-stat-label" style={{ color: '#00e5ff', fontWeight: '800', fontSize: '0.82rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
             {label}
           </span>
           <span className="blur-stat-value" style={{ color: '#ffffff', fontWeight: '900', fontSize: '1.45rem', marginTop: '2px' }}>
             {value}
           </span>
+          {subtext && (
+            <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: '600', marginTop: '2px' }}>
+              {subtext}
+            </span>
+          )}
         </div>
       </div>
     );
   };
 
-  // Gauge values: if 0, show realistic 0 for new accounts
-  const farmsGaugePct = farmCount > 0 ? 100 : 0;
-  const areaGaugePct = totalFarmArea > 0 ? Math.min(100, Math.round((totalCropArea / totalFarmArea) * 100)) : (totalCropArea > 0 ? 100 : 0);
-  const cropsGaugePct = cropCount > 0 ? 100 : 0;
-  const yieldGaugePct = totalYield > 0 ? 100 : 0;
-
   return (
     <BlurAdminLayout title="DASHBOARD" breadcrumb="Home / Dashboard">
       <div className="blur-dashboard-content">
         
-        {/* ROW 1: 4 Top Stat Cards with Circular Gauges for Real Farm Operations */}
+        {/* ROW 1: 4 Top Stat Cards with Contextual Agriculture Icons */}
         <div className="blur-stats-grid">
-          <CircularProgressGauge 
-            percentage={farmsGaugePct} 
+          <FarmStatCard 
+            icon="🚜"
             label="Registered Farms" 
             value={`${farmCount} Plots`} 
             strokeColor="#00d2aa"
+            subtext={totalFarmArea > 0 ? `${totalFarmArea.toFixed(1)} Acres Total` : "Active Land"}
           />
 
-          <CircularProgressGauge 
-            percentage={areaGaugePct} 
+          <FarmStatCard 
+            icon="🗺️"
             label="Cultivated Area" 
             value={`${totalCropArea.toFixed(1)} Acres`} 
             strokeColor="#00e5ff"
+            subtext={totalFarmArea > 0 ? `${Math.min(100, Math.round((totalCropArea / totalFarmArea) * 100))}% Land In Use` : "Planted Acreage"}
           />
 
-          <CircularProgressGauge 
-            percentage={cropsGaugePct} 
+          <FarmStatCard 
+            icon="🌾"
             label="Crop Varieties" 
             value={`${cropCount} Species`} 
             strokeColor="#10b981"
+            subtext={cropCount > 0 ? `${cropCount} Active Varieties` : "Planted Crops"}
           />
 
-          <CircularProgressGauge 
-            percentage={yieldGaugePct} 
-            label="Yield Efficiency" 
+          <FarmStatCard 
+            icon="⚖️"
+            label="Total Yield" 
             value={`${totalYield.toFixed(0)} Qtl`} 
             strokeColor="#00d2aa"
+            subtext={totalCropArea > 0 && totalYield > 0 ? `~${(totalYield / totalCropArea).toFixed(1)} Qtl/Acre Avg` : "Forecasted Harvest"}
           />
         </div>
 

@@ -28,6 +28,7 @@ public class YieldPredictService {
  
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static volatile boolean onlineAiAvailable = true;
     
     public YieldPredictService() {
         org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
@@ -37,6 +38,11 @@ public class YieldPredictService {
     }
     
     public FarmCrop predictYield(FarmCrop crop) {
+        if (apiKey == null || apiKey.trim().isEmpty() || apiKey.contains("dummy")) {
+            simulateYieldCalculation(crop);
+            return crop;
+        }
+
         try {
             // Force the AI to reply in a STRICT format so we can parse it in Java
             String prompt = String.format(
@@ -74,11 +80,14 @@ public class YieldPredictService {
             if (modelId != null && !modelId.trim().isEmpty()) {
                 candidateModels.add(modelId.trim());
             }
-            if (!candidateModels.contains("llama-3.1-8b-instant")) {
-                candidateModels.add("llama-3.1-8b-instant");
-            }
             if (!candidateModels.contains("llama-3.3-70b-versatile")) {
                 candidateModels.add("llama-3.3-70b-versatile");
+            }
+            if (!candidateModels.contains("qwen-2.5-32b")) {
+                candidateModels.add("qwen-2.5-32b");
+            }
+            if (!candidateModels.contains("gemma2-9b-it")) {
+                candidateModels.add("gemma2-9b-it");
             }
 
             ResponseEntity<String> response = null;
@@ -89,20 +98,17 @@ public class YieldPredictService {
                     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
                     response = restTemplate.postForEntity(apiUrl, entity, String.class);
                     if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                        System.out.println(">>> Groq AI Prediction successful using model: " + candidate);
+                        System.out.println(">>> Groq AI Prediction SUCCESSFUL using model: " + candidate);
                         break;
                     }
                 } catch (Exception modelEx) {
-                    System.err.println("Notice: Model " + candidate + " unavailable (" + modelEx.getMessage() + ")");
-                    String msg = String.valueOf(modelEx.getMessage()).toLowerCase();
-                    if (msg.contains("remote host terminated") || msg.contains("unknownhost") || msg.contains("refused") || msg.contains("timed out")) {
-                        break;
-                    }
+                    // Try next active candidate model
                 }
             }
 
             if (response == null || response.getBody() == null) {
-                throw new RuntimeException("Groq AI online endpoint unreachable or models unavailable.");
+                simulateYieldCalculation(crop);
+                return crop;
             }
  
             JsonNode root = objectMapper.readTree(response.getBody());
@@ -145,7 +151,7 @@ public class YieldPredictService {
             return crop; // Return the updated object
  
         } catch (Exception e) {
-            System.err.println("AI prediction bypassed or offline (" + e.getMessage() + "). Applying smart calculation simulation.");
+            onlineAiAvailable = false;
             simulateYieldCalculation(crop);
             return crop;
         }
