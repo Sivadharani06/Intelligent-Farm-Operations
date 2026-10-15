@@ -9,6 +9,7 @@ const CropInputView = () => {
     let navigate = useNavigate();
     let param = useParams();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [cropInput, setCropInput] = useState({
         cropId: "",
         cropName: "",
@@ -24,18 +25,21 @@ const CropInputView = () => {
     });
 
     const loadCropInputData = () => {
+        setLoading(true);
         getExpectedExpenses(param.cid).then(response => {
             if (response.data) {
                 setCropInput(response.data);
             }
         }).catch(error => {
             console.error("Error fetching crop input data", error);
+        }).finally(() => {
+            setLoading(false);
         });
     }
 
     useEffect(() => {
         loadCropInputData();
-    }, []);
+    }, [param.cid]);
 
     const returnBack = () => {
         navigate('/crop-list');
@@ -93,19 +97,27 @@ const CropInputView = () => {
                                 </tr>
                                 <tr>
                                     <th style={{ color: '#00e5ff', fontSize: '0.92rem', fontWeight: '800' }}>💧 Water Requirement</th>
-                                    <td style={{ textAlign: 'right', color: '#38bdf8', fontWeight: '800', fontSize: '1.05rem' }}>{cropInput.waterGallon} Gal / Acre</td>
+                                    <td style={{ textAlign: 'right', color: '#38bdf8', fontWeight: '800', fontSize: '1.05rem' }}>
+                                        {loading ? <span style={{ color: '#00e5ff', fontStyle: 'italic', fontSize: '0.88rem' }}>AI Estimating...</span> : `${cropInput.waterGallon} Gal / Acre`}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th style={{ color: '#00e5ff', fontSize: '0.92rem', fontWeight: '800' }}>🌱 Fertilizer Required</th>
-                                    <td style={{ textAlign: 'right', color: '#facc15', fontWeight: '800', fontSize: '1.05rem' }}>{cropInput.fertilizer} kg / Acre</td>
+                                    <td style={{ textAlign: 'right', color: '#facc15', fontWeight: '800', fontSize: '1.05rem' }}>
+                                        {loading ? <span style={{ color: '#facc15', fontStyle: 'italic', fontSize: '0.88rem' }}>AI Estimating...</span> : `${cropInput.fertilizer} kg / Acre`}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th style={{ color: '#00e5ff', fontSize: '0.92rem', fontWeight: '800' }}>🛡️ Pesticide Protection</th>
-                                    <td style={{ textAlign: 'right', color: '#fb7185', fontWeight: '800', fontSize: '1.05rem' }}>{cropInput.pesticides} kg / Acre</td>
+                                    <td style={{ textAlign: 'right', color: '#fb7185', fontWeight: '800', fontSize: '1.05rem' }}>
+                                        {loading ? <span style={{ color: '#fb7185', fontStyle: 'italic', fontSize: '0.88rem' }}>AI Estimating...</span> : `${cropInput.pesticides} kg / Acre`}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th style={{ color: '#00e5ff', fontSize: '0.92rem', fontWeight: '800' }}>🚜 Mechanized Tractor Usage</th>
-                                    <td style={{ textAlign: 'right', color: '#c084fc', fontWeight: '800', fontSize: '1.05rem' }}>{cropInput.tractorHour} hours / Acre</td>
+                                    <td style={{ textAlign: 'right', color: '#c084fc', fontWeight: '800', fontSize: '1.05rem' }}>
+                                        {loading ? <span style={{ color: '#c084fc', fontStyle: 'italic', fontSize: '0.88rem' }}>AI Estimating...</span> : `${cropInput.tractorHour} hours / Acre`}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -136,10 +148,17 @@ const CropInputView = () => {
                         </button>
                         <button 
                             onClick={handleSave}
+                            disabled={loading || !cropInput.waterGallon || cropInput.waterGallon <= 0}
                             className="btn btn-success flex-grow-1"
-                            style={{ padding: '12px', fontSize: '1rem', fontWeight: '900' }}
+                            style={{ 
+                                padding: '12px', 
+                                fontSize: '1rem', 
+                                fontWeight: '900',
+                                opacity: (loading || !cropInput.waterGallon || cropInput.waterGallon <= 0) ? 0.6 : 1,
+                                cursor: (loading || !cropInput.waterGallon || cropInput.waterGallon <= 0) ? 'not-allowed' : 'pointer'
+                            }}
                         >
-                            Save Details ✓
+                            {loading ? "Computing Demands..." : "Save Details ✓"}
                         </button>
                     </div>
                 </div>

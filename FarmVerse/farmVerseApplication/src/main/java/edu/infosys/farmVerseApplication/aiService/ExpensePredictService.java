@@ -31,8 +31,15 @@ public class ExpensePredictService {
     @Value("${huggingface.model.id}")
     private String modelId;
  
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    
+    public ExpensePredictService() {
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(8000);
+        this.restTemplate = new RestTemplate(factory);
+    }
     
     public FarmCropInputs predictResourceExpenses(FarmCropInputs cropInputs) {
         try {
@@ -64,20 +71,51 @@ public class ExpensePredictService {
  
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(apiKey);
- 
+            headers.setBearerAuth(apiKey.trim());
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) FarmVerse/1.0");
+
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", modelId);
- 
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "user", "content", prompt));
- 
             payload.put("messages", messages);
             payload.put("max_tokens", 300);
- 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
- 
-            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
+
+            // Use verified active chat completion models on Groq
+            List<String> candidateModels = new ArrayList<>();
+            if (modelId != null && !modelId.trim().isEmpty()) {
+                candidateModels.add(modelId.trim());
+            }
+            if (!candidateModels.contains("llama-3.1-8b-instant")) {
+                candidateModels.add("llama-3.1-8b-instant");
+            }
+            if (!candidateModels.contains("llama-3.3-70b-versatile")) {
+                candidateModels.add("llama-3.3-70b-versatile");
+            }
+
+            ResponseEntity<String> response = null;
+            for (String candidate : candidateModels) {
+                if (candidate == null || candidate.trim().isEmpty()) continue;
+                try {
+                    payload.put("model", candidate.trim());
+                    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+                    response = restTemplate.postForEntity(apiUrl, entity, String.class);
+                    if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                        System.out.println(">>> Groq AI Expense Prediction successful using model: " + candidate);
+                        break;
+                    }
+                } catch (Exception modelEx) {
+                    System.err.println("Notice: Model " + candidate + " unavailable (" + modelEx.getMessage() + ")");
+                    // If network host is unreachable or handshake terminated, don't stall further
+                    String msg = String.valueOf(modelEx.getMessage()).toLowerCase();
+                    if (msg.contains("remote host terminated") || msg.contains("unknownhost") || msg.contains("refused") || msg.contains("timed out")) {
+                        break;
+                    }
+                }
+            }
+
+            if (response == null || response.getBody() == null) {
+                throw new RuntimeException("Groq AI online endpoint unreachable or models unavailable.");
+            }
  
             // Parse response: choices[0].message.content
             JsonNode root = objectMapper.readTree(response.getBody());
@@ -93,7 +131,7 @@ public class ExpensePredictService {
             return cropInputs;
  
         } catch (Exception e) {
-            System.err.println("Error predicting resource expenses: " + e.getMessage());
+            System.err.println("AI prediction bypassed or offline (" + e.getMessage() + "). Applying smart calculation simulation.");
             simulateResourceCalculation(cropInputs);
             return cropInputs;
         }
@@ -101,53 +139,101 @@ public class ExpensePredictService {
     
     private void simulateResourceCalculation(FarmCropInputs cropInputs) {
         String name = (cropInputs.getCropName() != null) ? cropInputs.getCropName().toLowerCase() : "";
+        String soil = (cropInputs.getSoil() != null) ? cropInputs.getSoil().toLowerCase() : "";
         
         // Base per-acre defaults
-        double water = 4000;
-        double fertilizer = 50;
-        double pesticide = 5;
+        double water = 4000.0;
+        double fertilizer = 55.0;
+        double pesticide = 5.0;
         double tractor = 10.0;
         
-        if (name.contains("carrot")) {
-            water = 3500; fertilizer = 40; pesticide = 4; tractor = 8;
+        if (name.contains("tomat")) {
+            water = 4800.0; fertilizer = 65.0; pesticide = 6.0; tractor = 12.0;
+        } else if (name.contains("potato")) {
+            water = 4200.0; fertilizer = 70.0; pesticide = 6.5; tractor = 14.0;
+        } else if (name.contains("carrot")) {
+            water = 3500.0; fertilizer = 40.0; pesticide = 4.0; tractor = 8.0;
         } else if (name.contains("wheat")) {
-            water = 5500; fertilizer = 60; pesticide = 6; tractor = 12;
+            water = 5500.0; fertilizer = 60.0; pesticide = 6.0; tractor = 12.0;
         } else if (name.contains("corn") || name.contains("maize")) {
-            water = 6000; fertilizer = 70; pesticide = 7; tractor = 14;
-        } else if (name.contains("rice")) {
-            water = 10000; fertilizer = 80; pesticide = 5; tractor = 15;
+            water = 6000.0; fertilizer = 70.0; pesticide = 7.0; tractor = 14.0;
+        } else if (name.contains("rice") || name.contains("paddy")) {
+            water = 10000.0; fertilizer = 80.0; pesticide = 5.0; tractor = 15.0;
         } else if (name.contains("cotton")) {
-            water = 7000; fertilizer = 65; pesticide = 8; tractor = 11;
-        } else if (name.contains("soybean")) {
-            water = 4500; fertilizer = 45; pesticide = 5; tractor = 9;
+            water = 7000.0; fertilizer = 65.0; pesticide = 8.0; tractor = 11.0;
+        } else if (name.contains("soybean") || name.contains("bean")) {
+            water = 4500.0; fertilizer = 45.0; pesticide = 5.0; tractor = 9.0;
+        } else if (name.contains("sugarcane")) {
+            water = 12000.0; fertilizer = 90.0; pesticide = 9.0; tractor = 18.0;
         }
         
-        cropInputs.setWaterGallon(water);
-        cropInputs.setFertilizer(fertilizer);
-        cropInputs.setPesticides(pesticide);
-        cropInputs.setTractorHour(tractor);
+        // Adjust slightly by soil type
+        if (soil.contains("sandy")) {
+            water *= 1.15; // sandy needs more irrigation
+        } else if (soil.contains("clay")) {
+            water *= 0.90; // retains more water
+            tractor *= 1.10; // heavier soil requires more tillage
+        }
+        
+        cropInputs.setWaterGallon(Math.round(water * 10.0) / 10.0);
+        cropInputs.setFertilizer(Math.round(fertilizer * 10.0) / 10.0);
+        cropInputs.setPesticides(Math.round(pesticide * 10.0) / 10.0);
+        cropInputs.setTractorHour(Math.round(tractor * 10.0) / 10.0);
     }
     
     private void parseAndSetPredictedValues(String rawResponse, FarmCropInputs cropInputs) {
         String[] lines = rawResponse.split("\n");
- 
+
         for (String line : lines) {
-            String cleanLine = line.trim().toUpperCase();
- 
-            if (cleanLine.contains("WATER_GALLON:")) {
-                String val = cleanLine.replaceAll("(?i).*WATER_GALLON:", "").replaceAll("[^0-9.]", "").trim();
-                if (!val.isEmpty()) cropInputs.setWaterGallon(Double.parseDouble(val));
-            } else if (cleanLine.contains("FERTILIZER_KG:")) {
-                String val = cleanLine.replaceAll("(?i).*FERTILIZER_KG:", "").replaceAll("[^0-9.]", "").trim();
-                if (!val.isEmpty()) cropInputs.setFertilizer(Double.parseDouble(val));
-            } else if (cleanLine.contains("PESTICIDE_KG:")) {
-                String val = cleanLine.replaceAll("(?i).*PESTICIDE_KG:", "").replaceAll("[^0-9.]", "").trim();
-                if (!val.isEmpty()) cropInputs.setPesticides(Double.parseDouble(val));
-            } else if (cleanLine.contains("TRACTOR_HOUR:")) {
-                String val = cleanLine.replaceAll("(?i).*TRACTOR_HOUR:", "").replaceAll("[^0-9.]", "").trim();
-                if (!val.isEmpty()) cropInputs.setTractorHour(Double.parseDouble(val));
+            // Strip markdown formatting like **, *, #, backticks
+            String clean = line.replaceAll("[\\*#`_]", " ").trim();
+            String upper = clean.toUpperCase();
+
+            if (upper.contains("WATER") && (upper.contains("GALLON") || upper.contains(":"))) {
+                extractFirstNumber(clean).ifPresent(cropInputs::setWaterGallon);
+            } else if (upper.contains("FERTILIZER") && (upper.contains("KG") || upper.contains(":"))) {
+                extractFirstNumber(clean).ifPresent(cropInputs::setFertilizer);
+            } else if (upper.contains("PESTICIDE") && (upper.contains("KG") || upper.contains(":"))) {
+                extractFirstNumber(clean).ifPresent(cropInputs::setPesticides);
+            } else if (upper.contains("TRACTOR") && (upper.contains("HOUR") || upper.contains(":"))) {
+                extractFirstNumber(clean).ifPresent(cropInputs::setTractorHour);
             }
         }
+
+        // Safety fallback: if any value was not properly extracted or remained 0, fill with calculated values
+        if (cropInputs.getWaterGallon() == null || cropInputs.getWaterGallon() <= 0.0 ||
+            cropInputs.getFertilizer() == null || cropInputs.getFertilizer() <= 0.0 ||
+            cropInputs.getPesticides() == null || cropInputs.getPesticides() <= 0.0 ||
+            cropInputs.getTractorHour() == null || cropInputs.getTractorHour() <= 0.0) {
+            
+            FarmCropInputs fallback = new FarmCropInputs();
+            fallback.setCropName(cropInputs.getCropName());
+            fallback.setSoil(cropInputs.getSoil());
+            simulateResourceCalculation(fallback);
+            
+            if (cropInputs.getWaterGallon() == null || cropInputs.getWaterGallon() <= 0.0) {
+                cropInputs.setWaterGallon(fallback.getWaterGallon());
+            }
+            if (cropInputs.getFertilizer() == null || cropInputs.getFertilizer() <= 0.0) {
+                cropInputs.setFertilizer(fallback.getFertilizer());
+            }
+            if (cropInputs.getPesticides() == null || cropInputs.getPesticides() <= 0.0) {
+                cropInputs.setPesticides(fallback.getPesticides());
+            }
+            if (cropInputs.getTractorHour() == null || cropInputs.getTractorHour() <= 0.0) {
+                cropInputs.setTractorHour(fallback.getTractorHour());
+            }
+        }
+    }
+
+    private java.util.Optional<Double> extractFirstNumber(String text) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9]+(?:\\.[0-9]+)?)").matcher(text);
+        if (m.find()) {
+            try {
+                return java.util.Optional.of(Double.parseDouble(m.group(1)));
+            } catch (Exception ignored) {}
+        }
+        return java.util.Optional.empty();
     }
  
     

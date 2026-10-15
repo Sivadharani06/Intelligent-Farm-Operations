@@ -26,10 +26,15 @@ public class YieldPredictService {
     @Value("${huggingface.model.id}")
     private String modelId;
  
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    
+    public YieldPredictService() {
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(8000);
+        this.restTemplate = new RestTemplate(factory);
+    }
     
     public FarmCrop predictYield(FarmCrop crop) {
         try {
@@ -55,20 +60,50 @@ public class YieldPredictService {
  
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(apiKey);
- 
+            headers.setBearerAuth(apiKey.trim());
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) FarmVerse/1.0");
+
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", modelId);
- 
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "user", "content", prompt));
-            
             payload.put("messages", messages);
             payload.put("max_tokens", 300);
- 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
- 
-            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
+
+            // Use verified active chat completion models on Groq
+            List<String> candidateModels = new ArrayList<>();
+            if (modelId != null && !modelId.trim().isEmpty()) {
+                candidateModels.add(modelId.trim());
+            }
+            if (!candidateModels.contains("llama-3.1-8b-instant")) {
+                candidateModels.add("llama-3.1-8b-instant");
+            }
+            if (!candidateModels.contains("llama-3.3-70b-versatile")) {
+                candidateModels.add("llama-3.3-70b-versatile");
+            }
+
+            ResponseEntity<String> response = null;
+            for (String candidate : candidateModels) {
+                if (candidate == null || candidate.trim().isEmpty()) continue;
+                try {
+                    payload.put("model", candidate.trim());
+                    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+                    response = restTemplate.postForEntity(apiUrl, entity, String.class);
+                    if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                        System.out.println(">>> Groq AI Prediction successful using model: " + candidate);
+                        break;
+                    }
+                } catch (Exception modelEx) {
+                    System.err.println("Notice: Model " + candidate + " unavailable (" + modelEx.getMessage() + ")");
+                    String msg = String.valueOf(modelEx.getMessage()).toLowerCase();
+                    if (msg.contains("remote host terminated") || msg.contains("unknownhost") || msg.contains("refused") || msg.contains("timed out")) {
+                        break;
+                    }
+                }
+            }
+
+            if (response == null || response.getBody() == null) {
+                throw new RuntimeException("Groq AI online endpoint unreachable or models unavailable.");
+            }
  
             JsonNode root = objectMapper.readTree(response.getBody());
             String resultText = root.path("choices")
@@ -110,7 +145,7 @@ public class YieldPredictService {
             return crop; // Return the updated object
  
         } catch (Exception e) {
-            System.err.println("Error predicting yield via AI API: " + e.getMessage());
+            System.err.println("AI prediction bypassed or offline (" + e.getMessage() + "). Applying smart calculation simulation.");
             simulateYieldCalculation(crop);
             return crop;
         }
